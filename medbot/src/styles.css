@@ -1,0 +1,32 @@
+.options {
+    padding-bottom: 15px;
+  }
+  
+  .options-header {
+    text-align: center;
+    font-size: 1rem;
+    font-weight: normal;
+  }
+  
+  .options-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .option-item {
+    padding: 8px 15px;
+    border: 1px solid #2898ec;
+    border-radius: 25px;
+    color: #1f91e7;
+    font-size: 0.9rem;
+    margin: 3px;
+    box-shadow: inset 0px 0px 0px #2273c4;
+    transition: all 0.5s;
+    cursor: pointer;
+  }
+  
+  .option-item:hover {
+    box-shadow: inset 195px 0px 0px #2273c4;
+    color: #ffffff;
+  }
