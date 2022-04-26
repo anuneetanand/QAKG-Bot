@@ -1,11 +1,11 @@
-.options {
+  .options {
     padding-bottom: 15px;
   }
   
   .options-header {
     text-align: center;
-    font-size: 1rem;
-    font-weight: normal;
+    font-size: 0.9rem;
+    font-weight: bold;
   }
   
   .options-container {
@@ -15,11 +15,11 @@
   }
   
   .option-item {
-    padding: 8px 15px;
-    border: 1px solid #2898ec;
+    padding: 5px 15px;
+    border: 2px solid #2898ec;
     border-radius: 25px;
     color: #1f91e7;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     margin: 3px;
     box-shadow: inset 0px 0px 0px #2273c4;
     transition: all 0.5s;

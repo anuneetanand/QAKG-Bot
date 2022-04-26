@@ -13,7 +13,7 @@ const Menu = (props) => {
       id: 2
     }
   ];
-  return <Options options={options} title="Choose an option" {...props} />;
+  return <Options options={options} title="Choose an Option" {...props} />;
 };
 
 export default Menu;

@@ -1,6 +1,4 @@
   class ActionProvider {
-    // The action provider receives createChatBotMessage which you can use to define the bots response, and
-    // the setState function that allows for manipulating the bots internal state.
     constructor(
       createChatBotMessage,
       setStateFunc,
@@ -16,16 +14,8 @@
       this.createCustomMessage = createCustomMessage;
     }
   
-    handleMessageParser = () => {
-      const messages = this.createChatBotMessage(
-        'The message parser controls how the bot reads input and decides which action to invoke.',
-        { widget: 'messageParser', withAvatar: true }
-      );
-      this.addMessageToBotState(messages);
-    };
-  
     handleDefault = () => {
-      const message = this.createChatBotMessage('How can I help?', {
+      const message = this.createChatBotMessage('Sorry I didn\'t understand', {
         withAvatar: true,
       });
       this.addMessageToBotState(message);
@@ -33,7 +23,7 @@
 
     handleSample = () => {
       const message = this.createChatBotMessage(
-        'What are routes of administration for drugs given to patients with Dyspnea?',
+        '"What are routes of administration for drugs given to patients with Dyspnea?"',
         { withAvatar: true }
       );
       this.addMessageToBotState(message);
@@ -41,7 +31,7 @@
 
     handleStop = () => {
       const message = this.createChatBotMessage(
-        'Glad to help! Goodbye!',
+        'Glad to help :D',
         { withAvatar: true }
       );
       this.addMessageToBotState(message);

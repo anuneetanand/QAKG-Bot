@@ -1,11 +1,12 @@
 import { createChatBotMessage } from 'react-chatbot-kit';
-import Menu from './Widgets/Menu.js';
+import Menu from '../Widgets/Menu.js';
+import Avatar from '../Util/Avatar.js';
 
 const config = {
   botName: 'MedBot',
   initialMessages: [
     createChatBotMessage(
-      `Hi! I'm MedBot. I can help you in querying data from the Electronic Health Records.`
+      `Hi! I'm MedBot. I can help you in querying data from Electronic Health Records.`
     ),
     createChatBotMessage(
       "Please enter your query",
@@ -25,7 +26,7 @@ const config = {
     },
   },
   state: {},
-  // customComponents: { botAvatar: (props) => <CoBotAvatar {...props} /> },
+  customComponents: { botAvatar: (props) => <Avatar {...props} /> },
   widgets: [
     {
       widgetName: "Menu",
