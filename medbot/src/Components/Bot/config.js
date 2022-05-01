@@ -3,6 +3,10 @@ import Menu from "../Widgets/Menu.js";
 import Avatar from "../Util/Avatar.js";
 import SampleQueriesSpecific from "../Widgets/SampleQueriesSpecific.js";
 import ConfirmationSpecificQuery from "../Widgets/ConfirmationSpecificQuery.js";
+import EntitiesGeneralizedQueries from "../Widgets/EntitiesGeneralizedQueries.js";
+import SampleQueriesGeneralized from "../Widgets/SampleQueriesGeneralized.js";
+import FiltersGeneralizedQuery from "../Widgets/FiltersGeneralizedQuery.js";
+import ConfirmationGeneralizedQuery from "../Widgets/ConfirmationGeneralizedQuery.js";
 
 const config = {
   botName: "MedBot",
@@ -42,6 +46,30 @@ const config = {
     {
       widgetName: "ConfirmationSpecificQuery",
       widgetFunc: (props) => <ConfirmationSpecificQuery {...props} />,
+      mapStateToProps: ["messages"],
+    },
+
+    {
+      widgetName: "EntitiesGeneralizedQueries",
+      widgetFunc: (props) => <EntitiesGeneralizedQueries {...props} />,
+      mapStateToProps: ["messages"],
+    },
+
+    {
+      widgetName: "SampleQueriesGeneralized",
+      widgetFunc: (props) => <SampleQueriesGeneralized {...props} />,
+      mapStateToProps: ["messages"],
+    },
+
+    {
+      widgetName: "FiltersGeneralizedQuery",
+      widgetFunc: (props) => <FiltersGeneralizedQuery {...props} />,
+      mapStateToProps: ["messages"],
+    },
+
+    {
+      widgetName: "ConfirmationGeneralizedQuery",
+      widgetFunc: (props) => <ConfirmationGeneralizedQuery {...props} />,
       mapStateToProps: ["messages"],
     },
   ],

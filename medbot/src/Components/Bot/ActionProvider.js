@@ -16,6 +16,8 @@ class ActionProvider {
     this.createClientMessage = createClientMessage;
     this.stateRef = stateRef;
     this.createCustomMessage = createCustomMessage;
+    this.selectedFiltersGenericQuery = [];
+    this.selectedEntitiesGenericQuery = [];
   }
 
   handleDefault = () => {
@@ -78,14 +80,124 @@ class ActionProvider {
       });
     }
     if (confirmation === "Yes") {
-      let queryResults = "2 people have disease";
+      let queryResults = ["2 people have disease B", "5 people took drug A"];
       if (USING_BACKEND) {
         axios.get(`${backendURI}/getSpecificQueryResults`).then((res) => {
-          queryResults = res["entity"];
+          queryResults = res["results"];
         });
       }
-      const message = this.createChatBotMessage(queryResults);
+      queryResults.forEach((queryResult) => {
+        const message = this.createChatBotMessage(queryResult);
+        this.addMessageToBotState(message);
+      });
+    } else {
+      const message = this.createChatBotMessage(
+        "We apologize for the inconvenience :("
+      );
       this.addMessageToBotState(message);
+    }
+  };
+
+  handleGeneralizedQueryEntities = () => {
+    const message = this.createChatBotMessage(
+      "Select all entities which are a part of your query",
+      {
+        widget: "EntitiesGeneralizedQueries",
+      }
+    );
+    this.addMessageToBotState(message);
+  };
+
+  handleUserSelectedEntity = (entity) => {
+    if (entity.name === "Stop") {
+      if (USING_BACKEND) {
+        axios.post(`${backendURI}/sendSelectedEntities`, {
+          params: { selectedEntities: this.selectedEntitiesGenericQuery },
+        });
+      }
+      const message = this.createChatBotMessage(
+        "Select one of the following queries",
+        {
+          widget: "SampleQueriesGeneralized",
+        }
+      );
+      this.addMessageToBotState(message);
+    } else {
+      this.selectedEntitiesGenericQuery.push(entity);
+      const message = this.createChatBotMessage(entity.name);
+      this.addMessageToBotState(message);
+    }
+  };
+
+  handleUserSelctedGeneralizedQuery = (generalizedQuery) => {
+    console.log(generalizedQuery.name + " got it");
+    if (USING_BACKEND) {
+      axios.post(`${backendURI}/sendSelectedGeneralizedQuery`, {
+        params: { query: generalizedQuery },
+      });
+    }
+    const message = this.createChatBotMessage(
+      "Select filter(s) to apply to your query",
+      {
+        widget: "FiltersGeneralizedQuery",
+      }
+    );
+    this.addMessageToBotState(message);
+  };
+
+  handleUserSelectedFilter = (filter) => {
+    if (filter.name === "Stop") {
+      console.log(this.selectedFiltersGenericQuery + " correct filters?");
+      if (USING_BACKEND) {
+        axios.post(`${backendURI}/sendFiltersForQuery`, {
+          params: { selectedFilters: this.selectedFiltersGenericQuery },
+        });
+      }
+      let finalQuery = "What are the number of male patients above age 40?";
+      if (USING_BACKEND) {
+        axios.get(`${backendURI}/getFinalGeneralizedQuery`).then((res) => {
+          finalQuery = res["finalQuery"];
+        });
+      }
+      const finalQueryMessage = this.createChatBotMessage(finalQuery);
+      this.addMessageToBotState(finalQueryMessage);
+      const message = this.createChatBotMessage(
+        "Is the above query confirmed?",
+        {
+          widget: "ConfirmationGeneralizedQuery",
+        }
+      );
+      this.addMessageToBotState(message);
+    } else {
+      const message = this.createChatBotMessage(`Enter ${filter.name} value:`);
+      this.addMessageToBotState(message);
+    }
+  };
+
+  saveUserEnteredFilterValue = (filterName, filterValue) => {
+    this.selectedFiltersGenericQuery.push({
+      filterName: filterName,
+      filterValue: filterValue,
+    });
+  };
+
+  handleUserConfirmationGeneralizedQuery = (confirmation) => {
+    if (USING_BACKEND) {
+      axios.post(`${backendURI}/sendConfirmationGeneralizedQuery`, {
+        params: { choice: confirmation },
+      });
+    }
+    if (confirmation === "Yes") {
+      let queryResults = ["2 people have disease B", "5 people took drug A"];
+      if (USING_BACKEND) {
+        axios.get(`${backendURI}/getGeneralizedQueryResults`).then((res) => {
+          queryResults = res["results"];
+        });
+      }
+      queryResults.forEach((queryResult) => {
+        const message = this.createChatBotMessage(queryResult);
+        this.addMessageToBotState(message);
+      });
     } else {
       const message = this.createChatBotMessage(
         "We apologize for the inconvenience :("
@@ -95,9 +207,9 @@ class ActionProvider {
   };
 
   handleStop = () => {
-    const message = this.createChatBotMessage("Glad to help :D", {
-      withAvatar: true,
-    });
+    this.selectedEntitiesGenericQuery = [];
+    this.selectedFiltersGenericQuery = [];
+    const message = this.createChatBotMessage("Glad to help!");
     this.addMessageToBotState(message);
   };
 
