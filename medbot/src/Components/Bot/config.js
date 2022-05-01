@@ -7,16 +7,15 @@ import EntitiesGeneralizedQueries from "../Widgets/EntitiesGeneralizedQueries.js
 import SampleQueriesGeneralized from "../Widgets/SampleQueriesGeneralized.js";
 import FiltersGeneralizedQuery from "../Widgets/FiltersGeneralizedQuery.js";
 import ConfirmationGeneralizedQuery from "../Widgets/ConfirmationGeneralizedQuery.js";
+import RestartFromBeginning from "../Widgets/RestartFromBeginning.js";
 
 const config = {
   botName: "MedBot",
   initialMessages: [
     createChatBotMessage(
-      `Hi! I'm MedBot. I can help you in querying data from Electronic Health Records.`
+      "Hi! I'm MedBot. I can help you in querying data from Electronic Health Records."
     ),
     createChatBotMessage("Please enter your query", {
-      withAvatar: true,
-      delay: 400,
       widget: "Menu",
     }),
   ],
@@ -70,6 +69,12 @@ const config = {
     {
       widgetName: "ConfirmationGeneralizedQuery",
       widgetFunc: (props) => <ConfirmationGeneralizedQuery {...props} />,
+      mapStateToProps: ["messages"],
+    },
+
+    {
+      widgetName: "RestartFromBeginning",
+      widgetFunc: (props) => <RestartFromBeginning {...props} />,
       mapStateToProps: ["messages"],
     },
   ],

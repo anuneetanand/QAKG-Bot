@@ -23,6 +23,10 @@ const SampleQueriesSpecific = (props) => {
       }
     });
   }
+  options.push({
+    name: "Begin from start",
+    id: 1000000,
+  });
 
   const optionsMarkup = options.map((option) => {
     return (
@@ -30,7 +34,9 @@ const SampleQueriesSpecific = (props) => {
         className="option-item"
         key={option.id}
         onClick={() => {
-          props.actionProvider.handleUserSelctedSpecificQuery(option);
+          if (option.name === "Begin from start")
+            props.actionProvider.handleRestartFlow();
+          else props.actionProvider.handleUserSelctedSpecificQuery(option);
         }}
       >
         {option.name}

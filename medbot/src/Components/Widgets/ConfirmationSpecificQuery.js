@@ -8,6 +8,10 @@ const ConfirmationSpecificQuery = (props) => {
       name: "No",
       id: 2,
     },
+    {
+      name: "Begin from start",
+      id: 1000000,
+    },
   ];
 
   const optionsMarkup = options.map((option) => {
@@ -16,7 +20,12 @@ const ConfirmationSpecificQuery = (props) => {
         className="option-item"
         key={option.id}
         onClick={() => {
-          props.actionProvider.handleUserConfirmationSpecificQuery(option.name);
+          if (option.name === "Begin from start")
+            props.actionProvider.handleRestartFlow();
+          else
+            props.actionProvider.handleUserConfirmationSpecificQuery(
+              option.name
+            );
         }}
       >
         {option.name}

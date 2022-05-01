@@ -1,4 +1,4 @@
-import Options from "./Options";
+import "../../styles.css";
 
 const Menu = (props) => {
   const options = [
@@ -18,7 +18,15 @@ const Menu = (props) => {
       id: 3,
     },
   ];
-  return <Options options={options} title="Choose an Option" {...props} />;
+
+  const optionsMarkup = options.map((option) => {
+    return (
+      <div className="option-item" key={option.id} onClick={option.handler}>
+        {option.name}
+      </div>
+    );
+  });
+  return <div>{optionsMarkup}</div>;
 };
 
 export default Menu;

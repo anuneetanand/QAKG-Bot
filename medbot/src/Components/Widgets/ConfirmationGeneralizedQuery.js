@@ -8,6 +8,10 @@ const ConfirmationGeneralizedQuery = (props) => {
       name: "No",
       id: 2,
     },
+    {
+      name: "Begin from start",
+      id: 1000000,
+    },
   ];
 
   const optionsMarkup = options.map((option) => {
@@ -16,9 +20,12 @@ const ConfirmationGeneralizedQuery = (props) => {
         className="option-item"
         key={option.id}
         onClick={() => {
-          props.actionProvider.handleUserConfirmationGeneralizedQuery(
-            option.name
-          );
+          if (option.name === "Begin from start")
+            props.actionProvider.handleRestartFlow();
+          else
+            props.actionProvider.handleUserConfirmationGeneralizedQuery(
+              option.name
+            );
         }}
       >
         {option.name}

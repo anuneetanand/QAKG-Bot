@@ -36,17 +36,23 @@ class ActionProvider {
   };
 
   handleSpecificQuery = () => {
-    const message = this.createChatBotMessage("Enter specific query");
+    const message = this.createChatBotMessage("Enter specific query", {
+      widget: "RestartFromBeginning",
+    });
     this.addMessageToBotState(message);
   };
 
   handleGeneralQuery = () => {
-    const message = this.createChatBotMessage("Enter generic query");
+    const message = this.createChatBotMessage("Enter generic query", {
+      widget: "RestartFromBeginning",
+    });
     this.addMessageToBotState(message);
   };
 
   handleSpecificEntityId = (messageText) => {
-    const message = this.createChatBotMessage(messageText);
+    const message = this.createChatBotMessage(messageText, {
+      widget: "RestartFromBeginning",
+    });
     this.addMessageToBotState(message);
   };
 
@@ -207,10 +213,26 @@ class ActionProvider {
   };
 
   handleStop = () => {
-    this.selectedEntitiesGenericQuery = [];
-    this.selectedFiltersGenericQuery = [];
+    this.resetGlobalVariables();
     const message = this.createChatBotMessage("Glad to help!");
     this.addMessageToBotState(message);
+  };
+
+  handleRestartFlow = () => {
+    this.resetGlobalVariables();
+    const message1 = this.createChatBotMessage(
+      "Hi! I'm MedBot. I can help you in querying data from Electronic Health Records."
+    );
+    const message2 = this.createChatBotMessage("Please enter your query", {
+      widget: "Menu",
+    });
+    this.addMessageToBotState(message1);
+    this.addMessageToBotState(message2);
+  };
+
+  resetGlobalVariables = () => {
+    this.selectedEntitiesGenericQuery = [];
+    this.selectedFiltersGenericQuery = [];
   };
 
   addMessageToBotState = (messages) => {

@@ -29,6 +29,10 @@ const EntitiesGeneralizedQueries = (props) => {
   }
 
   options.push({ name: "Stop", id: 0 });
+  options.push({
+    name: "Begin from start",
+    id: 1000000,
+  });
 
   const optionsMarkup = options.map((option) => {
     return (
@@ -36,7 +40,9 @@ const EntitiesGeneralizedQueries = (props) => {
         className="option-item"
         key={option.id}
         onClick={() => {
-          props.actionProvider.handleUserSelectedEntity(option);
+          if (option.name === "Begin from start")
+            props.actionProvider.handleRestartFlow();
+          else props.actionProvider.handleUserSelectedEntity(option);
         }}
       >
         {option.name}
