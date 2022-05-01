@@ -27,7 +27,9 @@ class MessageParser {
           });
         entityStr = entityStr["entity"];
       }
-      this.actionProvider.handleSpecificEntityId(`Enter ${entityStr} id`);
+      return this.actionProvider.handleSpecificEntityId(
+        `Enter ${entityStr} id`
+      );
     } else if (lastMessage === "Enter generic query") {
     }
 
@@ -35,6 +37,7 @@ class MessageParser {
       if (USING_BACKEND) {
         axios.post(`${backendURI}/storeEntityID`, { params: { id: message } });
       }
+      return this.actionProvider.handleSampleQueriesSpecific();
     }
   };
 }

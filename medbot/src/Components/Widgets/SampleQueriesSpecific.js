@@ -1,29 +1,43 @@
+import axios from "axios";
+
+const backendURI = "http://localhost:8000";
 const USING_BACKEND = false;
 const SampleQueriesSpecific = (props) => {
   let options = [
     {
       name: "What is the age of patient 1?",
-      handler: props.actionProvider.handleUserSelctedSpecificQuery,
       id: 1,
     },
     {
       name: "What drugs were given to patient 2?",
-      handler: props.actionProvider.handleUserSelctedSpecificQuery,
       id: 2,
-    },
-    {
-      name: "Stop",
-      handler: props.actionProvider.handleStop,
-      id: 3,
     },
   ];
 
   if (USING_BACKEND) {
     axios.get(`${backendURI}/getPossibleSpecificQueries`).then((res) => {
-      queries = res["queries"];
+      const queries = res["queries"];
       options = [];
+      for (var queryID in queries) {
+        options.push({ name: queries[queryID], id: queryID });
+      }
     });
   }
+
+  const optionsMarkup = options.map((option) => {
+    return (
+      <div
+        className="option-item"
+        key={option.id}
+        onClick={() => {
+          props.actionProvider.handleUserSelctedSpecificQuery(option);
+        }}
+      >
+        {option.name}
+      </div>
+    );
+  });
+  return <div>{optionsMarkup}</div>;
 };
 
 export default SampleQueriesSpecific;

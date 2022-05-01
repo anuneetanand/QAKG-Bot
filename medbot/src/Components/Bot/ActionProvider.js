@@ -1,3 +1,7 @@
+import axios from "axios";
+
+const backendURI = "http://localhost:8000";
+const USING_BACKEND = false;
 class ActionProvider {
   constructor(
     createChatBotMessage,
@@ -44,7 +48,51 @@ class ActionProvider {
     this.addMessageToBotState(message);
   };
 
-  handleUserSelctedSpecificQuery = (specificQuery) => {};
+  handleSampleQueriesSpecific = () => {
+    const message = this.createChatBotMessage(
+      "Select one of the following queries",
+      {
+        widget: "SampleQueriesSpecific",
+      }
+    );
+    this.addMessageToBotState(message);
+  };
+
+  handleUserSelctedSpecificQuery = (specificQuery) => {
+    console.log(specificQuery + " received yay");
+    if (USING_BACKEND) {
+      axios.post(`${backendURI}/sendSelectedSpecificQuery`, {
+        params: { query: specificQuery },
+      });
+    }
+    const message = this.createChatBotMessage("Is your query confirmed?", {
+      widget: "ConfirmationSpecificQuery",
+    });
+    this.addMessageToBotState(message);
+  };
+
+  handleUserConfirmationSpecificQuery = (confirmation) => {
+    if (USING_BACKEND) {
+      axios.post(`${backendURI}/sendConfirmationSpecificQuery`, {
+        params: { choice: confirmation },
+      });
+    }
+    if (confirmation === "Yes") {
+      let queryResults = "2 people have disease";
+      if (USING_BACKEND) {
+        axios.get(`${backendURI}/getSpecificQueryResults`).then((res) => {
+          queryResults = res["entity"];
+        });
+      }
+      const message = this.createChatBotMessage(queryResults);
+      this.addMessageToBotState(message);
+    } else {
+      const message = this.createChatBotMessage(
+        "We apologize for the inconvenience :("
+      );
+      this.addMessageToBotState(message);
+    }
+  };
 
   handleStop = () => {
     const message = this.createChatBotMessage("Glad to help :D", {
