@@ -15,7 +15,7 @@ const config = {
     createChatBotMessage(
       "Hi! I'm MedBot. I can help you in querying data from Electronic Health Records."
     ),
-    createChatBotMessage("Please enter your query", {
+    createChatBotMessage("Please select an option.", {
       widget: "Menu",
     }),
   ],

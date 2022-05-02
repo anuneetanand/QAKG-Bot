@@ -3,7 +3,7 @@ import "../../styles.css";
 const Menu = (props) => {
   const options = [
     {
-      name: "Specific query pertaining to a specific entity",
+      name: "Query pertaining to a specific entity",
       handler: props.actionProvider.handleSpecificQuery,
       id: 1,
     },

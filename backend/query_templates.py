@@ -56,9 +56,9 @@ def get_disease(snomed_id):
 
     return f"""
     SELECT {var1} WHERE {{
-        ?drug a schema:Condition .
-        ?drug schema:snomed_id "{snomed_id}"^^xsd:integer .
-        ?drug rdfs:label {var1}
+        ?disease a schema:Condition .
+        ?disease schema:snomed_id "{snomed_id}"^^xsd:integer .
+        ?disease rdfs:label {var1}
     }}
     """
 

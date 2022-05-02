@@ -9,7 +9,7 @@ const ConfirmationGeneralizedQuery = (props) => {
       id: 2,
     },
     {
-      name: "Begin from start",
+      name: "Restart",
       id: 1000000,
     },
   ];
@@ -20,7 +20,7 @@ const ConfirmationGeneralizedQuery = (props) => {
         className="option-item"
         key={option.id}
         onClick={() => {
-          if (option.name === "Begin from start")
+          if (option.name === "Restart")
             props.actionProvider.handleRestartFlow();
           else
             props.actionProvider.handleUserConfirmationGeneralizedQuery(

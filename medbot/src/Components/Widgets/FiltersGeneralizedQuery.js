@@ -26,7 +26,7 @@ const FiltersGeneralizedQuery = (props) => {
 
   options.push({ name: "Stop", id: 0 });
   options.push({
-    name: "Begin from start",
+    name: "Restart",
     id: 1000000,
   });
 
@@ -36,7 +36,7 @@ const FiltersGeneralizedQuery = (props) => {
         className="option-item"
         key={option.id}
         onClick={() => {
-          if (option.name === "Begin from start")
+          if (option.name === "Restart")
             props.actionProvider.handleRestartFlow();
           else props.actionProvider.handleUserSelectedFilter(option);
         }}

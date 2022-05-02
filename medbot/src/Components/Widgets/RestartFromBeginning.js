@@ -1,7 +1,7 @@
 const RestartFromBeginning = (props) => {
   const options = [
     {
-      name: "Begin from start",
+      name: "Restart",
       id: 1000000,
       handler: props.actionProvider.handleRestartFlow,
     },
