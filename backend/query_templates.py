@@ -1,15 +1,14 @@
 
-def get_patient_info(patient_id):
+def get_patient_info(patient_id, age = False, gender = False):
     var1, var2 = "?age", "?gender"
 
     return f"""
-    SELECT {var1} {var2} WHERE {{
+    SELECT {var1 if age else ""} {var2 if gender else ""} WHERE {{
         ?person a schema:Patient .
         ?person schema:hasPatientID "{patient_id}"^^xsd:str .
-        ?person schema:age {var1} .
-        ?person schema:gender {var2} .
+        {f'?person schema:age {var1} .' if age else ""}
+        {f'?person schema:gender {var2} .' if gender else ""}
     }}"""
-
 
 def get_patient_list(age = "", age_comp = "=", gender = ""):
     var1, var2, var3 = "?patient_id", "?age", "?gender"
@@ -25,16 +24,16 @@ def get_patient_list(age = "", age_comp = "=", gender = ""):
     }}
     """
 
-def get_drug_info(snomed_id):
+def get_drug_info(snomed_id, route = False):
     var1, var2 = "?drug_name", "?route"
 
     return f"""
-    SELECT {var1} {var2} WHERE {{
+    SELECT {var1} {var2 if route else ""} WHERE {{
         ?drug a schema:Drug .
         ?drug schema:snomed_id "{snomed_id}"^^xsd:integer .
         ?drug rdfs:label {var1} .
     	?indDrug schema:drugType ?drug .
-        ?indDrug schema:routeOfAdministration {var2} .
+        {f'?indDrug schema:routeOfAdministration {var2} .' if route else ""}
     }}
     """
 
@@ -99,11 +98,11 @@ def get_patient_drug_list(age = "", age_comp = "=", gender = "", route = ""):
     }}
     """
 
-def get_patient_disease_info(patient_id, duration = False):
+def get_patient_disease_info(patient_id, date = False):
     var1, var2, var3 = "?disease", "?onSet", "?offSet"
 
     return f"""
-    SELECT DISTINCT {var1} {var2 if duration else ""} {var3 if duration else ""} WHERE {{
+    SELECT DISTINCT {var1} {var2 if date else ""} {var3 if date else ""} WHERE {{
         ?person a schema:Patient.
         ?person schema:hasPatientID "{patient_id}"^^xsd:str .
         ?person schema:hasCondition ?indCond .

@@ -1,51 +1,63 @@
-import datetime
+from query_templates import *
 from SPARQLWrapper import SPARQLWrapper, JSON, XML, CSV
-from nlp_helper import findEntity, findRelation
+from nlp_helper import findEntity, findRelation, entitySearch
+
 class ChatBot:
     def __init__(self, sparql_endpoint):
-        self.user_inputs = []
-        self.question = ""
+        self.user_query = ""
         self.entities = {}
-        self.relations = {}
-        self.templates = []
-        self.query = ""
+        self.primaryEntity = {}
+        self.filters = {}
+        self.sparql_query = ""
         self.sparql_endpoint = sparql_endpoint
 
-    def storeQuestion(self, user_query):
-        self.user_inputs.append(user_query)
-        self.question = user_query
+    def setQuery(self, user_query):
+        self.user_query = user_query
+        self.entities = findEntity(self.user_query)
 
-    def parseQuestion(self):
-        self.entities = findEntity(self.question)
-        self.relations = findRelation(self.question)
+    def setEntityId(self, entity_id):
+        self.entity_id = entity_id
 
-    def storeEntityID(self, entity_id):
-        self.entities['id'] = entity_id
+    def setFilters(self, filters):
+        self.filters = filters
 
-    def getPossibleQueries(self):
-        pass
+    def findTemplates(self):
+        
+        if self.primaryEntity["type"] == "patient":
 
-    def getPossibleFilters(self):
-        pass
+            if entitySearch("drug", self.entities):
+                template = get_drug_info(self.primaryEntity["id"], entitySearch("dose", self.entities), entitySearch("route", self.entities), entitySearch("date", self.entities))
+            elif entitySearch("disease", self.entities):
+                template = get_disease(self.primaryEntity["id"], entitySearch("date", self.entities))
+            else:
+                template = get_patient_info(self.primaryEntity["id"], True, True)
+        
+        elif self.primaryEntity["type"] == "drug":
+            template = get_drug_info(self.primaryEntity["id"], entitySearch("route", self.entities))
+        
+        elif self.primaryEntity["type"] == "condition":
+            template = get_disease(self.primaryEntity["id"])
+        
+        else:
 
-    def sendPossibleFilters(self):
-        pass
+            if entitySearch("patient", self.entities) and entitySearch("drug", self.entities):
+                template = get_patient_drug_list(self.primaryEntity["id"], self.filters['age'], self.filters['age']['comp'], self.filters['gender'])
+            elif entitySearch("patient", self.entities) and entitySearch("condition", self.entities):
+                template = get_patient_disease_list(self.primaryEntity["id"], self.filters['age'], self.filters['age']['comp'], self.filters['gender'])
+            elif entitySearch("patient", self.entities):
+                template = get_patient_list(self.filters['age'], self.filters['age']['comp'], self.filters['gender'])
+            else:
+                template = None
 
-    def sendSelectedQuery(self):
-        pass
+        return template              
 
-    def executeQuery(self, data_format = JSON):
+    def prepareQuery(self, best_template):
+        self.sparql_query = best_template
+
+    def executeQuery(self, data_format = 'JSON'):
+        sparql_format = {'JSON': JSON, 'XML': XML, 'CSV': CSV}
         sparql = SPARQLWrapper(self.sparql_endpoint)
-        sparql.setQuery(self.query)
-        sparql.setReturnFormat(data_format)
+        sparql.setQuery(self.sparql_query)
+        sparql.setReturnFormat(sparql_format['data_format'])
         results = sparql.query().convert()
         return results
-
-    def stop(self):
-        with open("logs.txt","a") as f:
-            f.write(">>>", datetime.datetime.now())
-            f.write("User inputs: " + str(self.user_inputs) + "\n")
-            f.write("Question: " + self.question + "\n")
-            f.write("Entities: " + str(self.entities) + "\n")
-            f.write("Query: " + self.query + "\n")
-            f.write("-"*50 + "\n")

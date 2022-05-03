@@ -32,3 +32,6 @@ def findRelation(text):
         relations.append(span.text)
 
     return relations
+
+def entitySearch(entity, entity_list):
+    pass
