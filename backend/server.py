@@ -16,4 +16,4 @@ from chatbot import ChatBot
 userFeedback = {"positive": 0, "negative": 0}
 sparqlEndpoint = "http://Anuneets-MacBook-Air.local:7200/repositories/IFHP"
 
-MedBot = ChatBot(endpoint = sparqlEndpoint)
+MedBot = ChatBot(endpoint = sparqlEndpoint, threshold=0.5)

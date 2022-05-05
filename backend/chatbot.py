@@ -1,50 +1,51 @@
-from query_templates import *
 from SPARQLWrapper import SPARQLWrapper, JSON, XML, CSV
-from nlp_helper import findEntity, findRelation, entitySearch
+from query_templates import *
+from nlp_toolbox import *
 
 class ChatBot:
-    def __init__(self, sparql_endpoint):
+    def __init__(self, sparql_endpoint, threshold = 0.5):
+        self.NLPToolbox = NLP_Toolbox()
         self.user_query = ""
-        self.entities = {}
-        self.primaryEntity = {}
-        self.filters = {}
+        self.query_data = {}
+        self.templates = {}
         self.sparql_query = ""
+        self.threshold = threshold
         self.sparql_endpoint = sparql_endpoint
 
     def setQuery(self, user_query):
         self.user_query = user_query
-        self.entities = findEntity(self.user_query)
+        self.query_data = self.NLPToolbox.parse(self.user_query)
 
-    def setEntityId(self, entity_id):
-        self.entity_id = entity_id
+    def setTopic(self, topic):
+        self.query_data['Topic'] = topic
 
-    def setFilters(self, filters):
-        self.filters = filters
+    def checkAttribute(self, attribute):
+        if attribute in self.query_data['Attribute_Scores']:
+            return self.query_data['Attribute_Scores'][attribute] > self.threshold
 
     def findTemplates(self):
-        
-        if self.primaryEntity["type"] == "patient":
+        if self.query_data['Topic'] == "patient":
 
-            if entitySearch("drug", self.entities):
-                template = get_drug_info(self.primaryEntity["id"], entitySearch("dose", self.entities), entitySearch("route", self.entities), entitySearch("date", self.entities))
-            elif entitySearch("disease", self.entities):
-                template = get_disease(self.primaryEntity["id"], entitySearch("date", self.entities))
+            if self.checkAttribute("drug"):
+                template = get_drug_info(self.query_data['Patient_ID'][0], self.checkAttribute("dose"), self.checkAttribute("route"), self.checkAttribute("date"))
+            elif self.checkAttribute("disease"):
+                template = get_disease(self.query_data['Patient_ID'][0], self.checkAttribute("date"))
             else:
-                template = get_patient_info(self.primaryEntity["id"], True, True)
+                template = get_patient_info(self.query_data['Patient_ID'][0], True, True)
         
-        elif self.primaryEntity["type"] == "drug":
-            template = get_drug_info(self.primaryEntity["id"], entitySearch("route", self.entities))
+        elif self.query_data['Topic'] == "drug":
+            template = get_drug_info(self.query_data['Snomed_ID'][0], self.checkAttribute("route"))
         
-        elif self.primaryEntity["type"] == "condition":
-            template = get_disease(self.primaryEntity["id"])
+        elif self.query_data['Topic'] == "condition":
+            template = get_disease(self.query_data['Snomed_ID'][0])
         
         else:
 
-            if entitySearch("patient", self.entities) and entitySearch("drug", self.entities):
-                template = get_patient_drug_list(self.primaryEntity["id"], self.filters['age'], self.filters['age']['comp'], self.filters['gender'])
-            elif entitySearch("patient", self.entities) and entitySearch("condition", self.entities):
-                template = get_patient_disease_list(self.primaryEntity["id"], self.filters['age'], self.filters['age']['comp'], self.filters['gender'])
-            elif entitySearch("patient", self.entities):
+            if self.checkAttribute("patient") and self.checkAttribute("drug"):
+                template = get_patient_drug_list(self.query_data['Patient_ID'][0], self.filters['age'], self.filters['age']['comp'], self.filters['gender'])
+            elif self.checkAttribute("patient") and self.checkAttribute("condition"):
+                template = get_patient_disease_list(self.query_data['Patient_ID'][0], self.filters['age'], self.filters['age']['comp'], self.filters['gender'])
+            elif self.checkAttribute("patient"):
                 template = get_patient_list(self.filters['age'], self.filters['age']['comp'], self.filters['gender'])
             else:
                 template = None
