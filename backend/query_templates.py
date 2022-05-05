@@ -1,3 +1,12 @@
+# Dynamic SPARQL Query Templates
+
+def get_prefix():
+    return f"""
+    PREFIX schema: <http://www.semanticweb.org/btp/clinical/ontology/>
+    PREFIX ex: <http://www.example.org/btp_ontology/individual/>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    """
 
 def get_patient_info(patient_id, age = False, gender = False):
     var1, var2 = "?age", "?gender"
@@ -10,7 +19,7 @@ def get_patient_info(patient_id, age = False, gender = False):
         {f'?person schema:gender {var2} .' if gender else ""}
     }}"""
 
-def get_patient_list(age = "", age_comp = "=", gender = ""):
+def get_patient_list(age = "", age_comp = "", gender = ""):
     var1, var2, var3 = "?patient_id", "?age", "?gender"
 
     return f"""
@@ -79,7 +88,7 @@ def get_patient_drug_info(patient_id, dosage = False, route = False, date = Fals
     }}
     """
 
-def get_patient_drug_list(age = "", age_comp = "=", gender = "", route = ""):
+def get_patient_drug_list(age = "", age_comp = "", gender = "", route = ""):
     var1, var2, var3, var4, var5, var6, var7 = "?patient_id", "?age", "?gender", "?drug_name", "?dosageAmount", "?dosageUnit", "?route"
 
     return f"""
@@ -114,7 +123,7 @@ def get_patient_disease_info(patient_id, date = False):
     }}
     """
 
-def get_patient_disease_list(age = "", age_comp = "=", gender = ""):
+def get_patient_disease_list(age = "", age_comp = "", gender = ""):
     var1, var2, var3, var4 = "?patient_id", "?age", "?gender", "?disease"
 
     return f"""
