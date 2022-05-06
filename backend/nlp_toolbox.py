@@ -6,41 +6,52 @@ from nltk.corpus import wordnet, stopwords
 from nltk.stem import WordNetLemmatizer
 
 class NLP_Toolbox:
-    def __init__(self):
+    def __init__(self, verbose = False):
         self.nlp = spacy.load("en_core_web_trf")
         self.matcher = Matcher(self.nlp.vocab)
         self.lemmatizer = WordNetLemmatizer()
+        self.custom_vocabulary = {}
         self.custom_vocabulary['drugs'] = json.load(open("./data/drugs.json","r"))
-        self.custom_vocabulary['conditions'] = json.load(open("./data/drugs.json","r"))
-        self.custom_vocabulary['routes'] = json.load(open("./data/drugs.json","r"))
+        self.custom_vocabulary['conditions'] = json.load(open("./data/conditions.json","r"))
+        self.custom_vocabulary['routes'] = json.load(open("./data/routes.json","r"))
         self.text = ""
         self.tokens = []
         self.data = {}
+        self.verbose = verbose
 
     def parse(self, text):
+        if self.verbose: print("Parsing Text:",text)
+
         self.data = {}
         self.text = text
         self.findTokens()
         self.findEntityID()
         self.findFilters()
-        self.findQuestionType()
         self.findAttributes()
+
         return self.data
 
     def cleanText(self):
         cleaned_tokens = [token.text.lower() for token in self.tokens]
-        cleaned_tokens = [word for word in cleaned_tokens if word in set(stopwords.words('english'))]
+        cleaned_tokens = [word for word in cleaned_tokens if word not in set(stopwords.words('english'))]
         cleaned_tokens = [self.lemmatizer.lemmatize(word) for word in cleaned_tokens]
         return cleaned_tokens
 
     def findTokens(self):
+        if self.verbose: print("Tokenizing Text")
+
         self.tokens = [i for i in self.nlp(self.text)]
 
     def findEntityID(self):
-        self.data['Patient_ID'] = re.findall(r'subject_id_[0-9]+', self.text)
-        self.data['Snomed_ID'] =  re.findall(r'snomed_id [0-9]+', self.text)
+        if self.verbose: print("Searching IDs")
 
+        self.data['Patient_ID'] = re.findall(r'subject_id_[0-9]+', self.text.lower())
+        self.data['Snomed_ID'] =  re.findall(r'snomed_id [0-9]+', self.text.lower())
+        self.data['Snomed_ID'] = [x.split(' ')[1] for x in self.data['Snomed_ID']]
+        
     def findFilters(self):
+        if self.verbose: print("Finding Filters")
+
         self.data['Filters'] = {}
         self.data['Filters']['age'] = {'val':"",'comp':""}
         self.data['Filters']['gender'] = ""
@@ -64,12 +75,10 @@ class NLP_Toolbox:
             if term.lower() in self.text.lower():
                 self.data['Filters']['administration'] = term
                 break
-
-    def findQuestionType(self):
-        # Add rule based classifier
-        pass
-
+        
     def findAttributes(self):
+        if self.verbose: print("Finding Attributes")
+
         keyword_list = self.cleanText()
         attribute_scores = {'patient': 0, 'drug': 0, 'condition': 0, 'gender': 0, 'age': 0, 'administration': 0, 'dose':0, 'date':0 }
         attribute_list = ['patient.n.01','drug.n.01','condition.n.06','gender.n.01','age.n.01','administration.n.03','dose.n.01','date.n.06']

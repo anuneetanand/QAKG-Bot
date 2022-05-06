@@ -3,14 +3,15 @@ from query_templates import *
 from nlp_toolbox import *
 
 class ChatBot:
-    def __init__(self, sparql_endpoint, threshold = 0.5):
-        self.NLPToolbox = NLP_Toolbox()
+    def __init__(self, sparql_endpoint, threshold = 0.5, verbose = False):
+        self.NLPToolbox = NLP_Toolbox(verbose = verbose)
         self.user_query = ""
         self.query_data = {}
         self.templates = {}
         self.sparql_query = ""
         self.threshold = threshold
         self.sparql_endpoint = sparql_endpoint
+        self.verbose = False
 
     def setQuery(self, user_query):
         self.user_query = user_query
@@ -19,7 +20,12 @@ class ChatBot:
     def setTopic(self, topic):
         self.query_data['Topic'] = topic
 
+    def setAnswerType(self, answer_type):
+        self.query_data['Answer_Type'] = answer_type
+
     def findTemplates(self):
+        if self.verbose: print("Finding Templates")
+
         Score = self.query_data["Attribute_Scores"]
         Check = {attribute: Score[attribute] > self.threshold for attribute in Score}
         Filters = self.query_data["Filters"]
@@ -61,13 +67,13 @@ class ChatBot:
 
         else:
 
-            if Check["patient"] and Check["drug"]:
+            if Check["patient"] or Check["drug"]:
                 template = get_patient_drug_list(Filters['age']['val'], Filters['age']['comp'], Filters['gender'], Filters['administration'])
                 description = f'Filtered Information about patients and drugs given to them'
                 template_score = (Score["patient"]+Score["drug"])/2
                 Templates.append((template, description, template_score))
             
-            if Check["patient"] and Check["condition"]:
+            if Check["patient"] or Check["condition"]:
                 template = get_patient_disease_list(Filters['age']['val'], Filters['age']['comp'], Filters['gender'])
                 description = f'Filtered Information about patients and diseases had by them'
                 template_score = (Score["patient"]+Score["condition"])/2
@@ -85,10 +91,33 @@ class ChatBot:
     def prepareQuery(self, best_template):
         self.sparql_query = get_prefix() + best_template
 
-    def executeQuery(self, data_format = 'JSON'):
-        sparql_format = {'JSON': JSON, 'XML': XML, 'CSV': CSV}
+    def executeQuery(self):
+        if self.verbose: print("Executing Results")
+
         sparql = SPARQLWrapper(self.sparql_endpoint)
         sparql.setQuery(self.sparql_query)
-        sparql.setReturnFormat(sparql_format[data_format])
-        results = sparql.query().convert()
-        return results
+
+        if self.query_data['Answer_Type'] == "CSV":
+            sparql.setReturnFormat(CSV)
+            response = sparql.query().convert()
+            return response
+        elif self.query_data['Answer_Type'] == "JSON":
+            sparql.setReturnFormat(JSON)
+            response = sparql.query().convert()
+            return response
+        elif self.query_data['Answer_Type'] == "XML":
+            sparql.setReturnFormat(XML)
+            response = sparql.query().convert()
+            return response
+        elif self.query_data['Answer_Type'] == "Count":
+            sparql.setReturnFormat(JSON)
+            response = sparql.query().convert()
+            count = len(sparql.query().convert()["results"]['bindings'])
+            return f'{count} Record(s) matched your query'
+        elif self.query_data['Answer_Type'] == "Boolean":
+            sparql.setReturnFormat(JSON)
+            response = sparql.query().convert()
+            flag = len(sparql.query().convert()["results"]['bindings']) > 0
+            return f'Yes' if flag else f'No'
+        else:
+            return "Invalid Answer Type"
