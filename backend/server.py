@@ -28,4 +28,4 @@ for x in Sample[4:]:
 
     print("\n\n")
     MedBot.prepareQuery(T[0][0])
-    print(MedBot.executeQuery()['head'])
+    print(MedBot.executeQuery(data_format='CSV'))
