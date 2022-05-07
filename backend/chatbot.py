@@ -7,11 +7,19 @@ class ChatBot:
         self.NLPToolbox = NLP_Toolbox(verbose = verbose)
         self.user_query = ""
         self.query_data = {}
-        self.templates = {}
+        self.templates = []
         self.sparql_query = ""
         self.threshold = threshold
         self.sparql_endpoint = sparql_endpoint
+        self.response = ""
         self.verbose = False
+
+    def restart(self):
+        self.user_query = ""
+        self.query_data = {}
+        self.templates = []
+        self.sparql_query = ""
+        self.response = ""
 
     def setQuery(self, user_query):
         self.user_query = user_query
@@ -23,11 +31,34 @@ class ChatBot:
     def setAnswerType(self, answer_type):
         self.query_data['Answer_Type'] = answer_type
 
+    def validateID(self):
+        if self.query_data['Topic'] == "patient":
+            return len(self.query_data['Patient_ID']) == 1
+        else:
+            return len(self.query_data['Snomed_ID']) == 1
+
+    def findAppliedFilters(self):
+        applied_filters = []
+        for filter_type in self.query_data["Filters"]:
+            if self.query_data["Filters"][filter_type] != "":
+                applied_filters.append(filter_type)
+        return applied_filters
+
+    def findPossibleFilters(self):
+        possible_filters = []
+        for filter_type in self.query_data["Filters"]:
+            if self.query_data["Filters"][filter_type] == "":
+                possible_filters.append(filter_type)
+        return possible_filters
+
+    def updateQueryData(self, new_query_data):
+        self.query_data = new_query_data
+
     def findTemplates(self):
         if self.verbose: print("Finding Templates")
 
-        Score = self.query_data["Attribute_Scores"]
-        Check = {attribute: Score[attribute] > self.threshold for attribute in Score}
+        Score = self.query_data["Entity_Scores"]
+        Check = {entity: Score[entity] > self.threshold for entity in Score}
         Filters = self.query_data["Filters"]
         Templates = []
 
@@ -86,7 +117,7 @@ class ChatBot:
                 Templates.append((template, description, template_score))
 
         Templates.sort(key=lambda x: x[2], reverse=True)
-        return Templates             
+        self.templates = Templates             
 
     def prepareQuery(self, best_template):
         self.sparql_query = get_prefix() + best_template
@@ -100,24 +131,24 @@ class ChatBot:
         if self.query_data['Answer_Type'] == "CSV":
             sparql.setReturnFormat(CSV)
             response = sparql.query().convert()
-            return response
+            self.response = response
         elif self.query_data['Answer_Type'] == "JSON":
             sparql.setReturnFormat(JSON)
             response = sparql.query().convert()
-            return response
+            self.response = response
         elif self.query_data['Answer_Type'] == "XML":
             sparql.setReturnFormat(XML)
             response = sparql.query().convert()
-            return response
+            self.response = response
         elif self.query_data['Answer_Type'] == "Count":
             sparql.setReturnFormat(JSON)
             response = sparql.query().convert()
             count = len(sparql.query().convert()["results"]['bindings'])
-            return f'{count} Record(s) matched your query'
+            self.response = f'{count} Record(s) matched your query'
         elif self.query_data['Answer_Type'] == "Boolean":
             sparql.setReturnFormat(JSON)
             response = sparql.query().convert()
             flag = len(sparql.query().convert()["results"]['bindings']) > 0
-            return f'Yes' if flag else f'No'
+            self.response = f'Yes' if flag else f'No'
         else:
-            return "Invalid Answer Type"
+            self.response = "Error!"
