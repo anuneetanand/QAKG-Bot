@@ -8,6 +8,7 @@ import SampleQueriesGeneralized from "../Widgets/SampleQueriesGeneralized.js";
 import FiltersGeneralizedQuery from "../Widgets/FiltersGeneralizedQuery.js";
 import ConfirmationGeneralizedQuery from "../Widgets/ConfirmationGeneralizedQuery.js";
 import RestartFromBeginning from "../Widgets/RestartFromBeginning.js";
+import SpecificQueryEntities from "../Widgets/SpecificQueryEntities.js";
 
 const config = {
   botName: "MedBot",
@@ -69,6 +70,12 @@ const config = {
     {
       widgetName: "ConfirmationGeneralizedQuery",
       widgetFunc: (props) => <ConfirmationGeneralizedQuery {...props} />,
+      mapStateToProps: ["messages"],
+    },
+
+    {
+      widgetName: "SpecificQueryEntities",
+      widgetFunc: (props) => <SpecificQueryEntities {...props} />,
       mapStateToProps: ["messages"],
     },
 

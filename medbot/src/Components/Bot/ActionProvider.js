@@ -36,6 +36,21 @@ class ActionProvider {
   };
 
   handleSpecificQuery = () => {
+    const message = this.createChatBotMessage(
+      "Select one of the following specific query entity",
+      {
+        widget: "SpecificQueryEntities",
+      }
+    );
+    this.addMessageToBotState(message);
+  };
+
+  handleSpecificQueryEntity = (entityName) => {
+    if (USING_BACKEND) {
+      axios.post(`${backendURI}/sendQueryTopic`, {
+        params: { topic: entityName },
+      });
+    }
     const message = this.createChatBotMessage("Enter specific query", {
       widget: "RestartFromBeginning",
     });
