@@ -143,15 +143,27 @@ class ChatBot:
             sparql.setReturnFormat(XML)
             response = sparql.query().convert()
             self.response = response
+        elif self.query_data['Answer_Type'] == "Record":
+            sparql.setReturnFormat(XML)
+            response = sparql.query().convert()
+            record = {}
+            record['headers'] = response['head']['vars']
+            record['data'] = []
+            for result in response["results"]['bindings']:
+                res = []
+                for attribute in result:
+                    res.append(result[attribute]['value'].split('/')[-1])
+                record["data"].append(" ".join(res))
+            self.response = record
         elif self.query_data['Answer_Type'] == "Count":
             sparql.setReturnFormat(JSON)
             response = sparql.query().convert()
             count = len(sparql.query().convert()["results"]['bindings'])
-            self.response = f'{count} Record(s) matched your query'
+            self.response = { 'headers' : [], 'data': {0:f'{count} Record(s) matched your query'}}
         elif self.query_data['Answer_Type'] == "Boolean":
             sparql.setReturnFormat(JSON)
             response = sparql.query().convert()
             flag = len(sparql.query().convert()["results"]['bindings']) > 0
-            self.response = f'Yes' if flag else f'No'
+            self.response = { 'headers' : [], 'data': {0:f'Yes' if flag else f'No'}}
         else:
             self.response = "Error!"
