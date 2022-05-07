@@ -15,19 +15,19 @@ class NLP_Toolbox:
         self.custom_vocabulary['conditions'] = json.load(open("./data/conditions.json","r"))
         self.custom_vocabulary['routes'] = json.load(open("./data/routes.json","r"))
         self.text = ""
-        self.tokens = []
         self.data = {}
+        self.tokens = []
         self.verbose = verbose
 
     def parse(self, text):
-        if self.verbose: print("Parsing Text:",text)
+        if self.verbose: print("Parsing Text:", text)
 
         self.data = {}
         self.text = text
         self.findTokens()
         self.findEntityID()
         self.findFilters()
-        self.findentitys()
+        self.findEntities()
 
         return self.data
 
@@ -38,8 +38,6 @@ class NLP_Toolbox:
         return cleaned_tokens
 
     def findTokens(self):
-        if self.verbose: print("Tokenizing Text")
-
         self.tokens = [i for i in self.nlp(self.text)]
 
     def findEntityID(self):
@@ -47,7 +45,7 @@ class NLP_Toolbox:
 
         self.data['Patient_ID'] = re.findall(r'subject_id_[0-9]+', self.text.lower())
         self.data['Snomed_ID'] =  re.findall(r'snomed_id [0-9]+', self.text.lower())
-        self.data['Snomed_ID'] = [x.split(' ')[1] for x in self.data['Snomed_ID']]
+        self.data['Snomed_ID'] = [x.split(' ')[-1] for x in self.data['Snomed_ID']]
         
     def findFilters(self):
         if self.verbose: print("Finding Filters")
@@ -76,8 +74,8 @@ class NLP_Toolbox:
                 self.data['Filters']['administration'] = term
                 break
         
-    def findentitys(self):
-        if self.verbose: print("Finding entitys")
+    def findEntities(self):
+        if self.verbose: print("Finding Entities")
 
         keyword_list = self.cleanText()
         Entity_Scores = {'patient': 0, 'drug': 0, 'condition': 0, 'gender': 0, 'age': 0, 'administration': 0, 'dose':0, 'date':0 }

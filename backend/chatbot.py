@@ -5,12 +5,12 @@ from nlp_toolbox import *
 class ChatBot:
     def __init__(self, sparql_endpoint, threshold = 0.5, verbose = False):
         self.NLPToolbox = NLP_Toolbox(verbose = verbose)
+        self.sparql_endpoint = sparql_endpoint
+        self.threshold = threshold
         self.user_query = ""
         self.query_data = {}
         self.templates = []
         self.sparql_query = ""
-        self.threshold = threshold
-        self.sparql_endpoint = sparql_endpoint
         self.response = ""
         self.verbose = False
 
@@ -31,6 +31,24 @@ class ChatBot:
     def setAnswerType(self, answer_type):
         self.query_data['Answer_Type'] = answer_type
 
+    def getIdentifiedEntities(self):
+        entity_scores = self.query_data['Entity_Scores']
+        identified_entities = []
+        for entity in entity_scores:
+            if entity_scores[entity] > self.threshold:
+                identified_entities.append(entity)
+        identified_entities_json = {i: identified_entities[i] for i in identified_entities}
+        return identified_entities_json
+
+    def getOtherEntities(self):
+        entity_scores = self.query_data['Entity_Scores']
+        other_entities = []
+        for entity in entity_scores:
+            if entity_scores[entity] > self.threshold:
+                other_entities.append(entity)
+        other_entities_json = {i: other_entities[i] for i in other_entities}
+        return other_entities_json
+
     def validateID(self):
         if self.query_data['Topic'] == "patient":
             return len(self.query_data['Patient_ID']) == 1
@@ -45,7 +63,6 @@ class ChatBot:
         applied_filters_json = {i: applied_filters[i] for i in applied_filters}
         return applied_filters_json
 
-
     def findPossibleFilters(self):
         possible_filters = []
         for filter_type in self.query_data["Filters"]:
@@ -54,7 +71,10 @@ class ChatBot:
         possible_filters_json = {i: possible_filters[i] for i in possible_filters}
         return possible_filters_json
 
-    def updateQueryData(self, new_query_data):
+    def getQueryData(self):
+        return self.query_data
+
+    def setQueryData(self, new_query_data):
         self.query_data = new_query_data
 
     def findTemplates(self):
@@ -122,6 +142,9 @@ class ChatBot:
         Templates.sort(key=lambda x: x[2], reverse=True)
         self.templates = Templates             
 
+    def getTemplates(self):
+        return self.templates
+
     def prepareQuery(self, best_template):
         self.sparql_query = get_prefix() + best_template
 
@@ -135,16 +158,19 @@ class ChatBot:
             sparql.setReturnFormat(CSV)
             response = sparql.query().convert()
             self.response = response
+
         elif self.query_data['Answer_Type'] == "JSON":
             sparql.setReturnFormat(JSON)
             response = sparql.query().convert()
             self.response = response
+
         elif self.query_data['Answer_Type'] == "XML":
             sparql.setReturnFormat(XML)
             response = sparql.query().convert()
             self.response = response
+
         elif self.query_data['Answer_Type'] == "Record":
-            sparql.setReturnFormat(XML)
+            sparql.setReturnFormat(JSON)
             response = sparql.query().convert()
             record = {}
             record['headers'] = response['head']['vars']
@@ -155,15 +181,21 @@ class ChatBot:
                     res.append(result[attribute]['value'].split('/')[-1])
                 record["data"].append(" ".join(res))
             self.response = record
+
         elif self.query_data['Answer_Type'] == "Count":
             sparql.setReturnFormat(JSON)
             response = sparql.query().convert()
             count = len(sparql.query().convert()["results"]['bindings'])
             self.response = { 'headers' : [], 'data': {0:f'{count} Record(s) matched your query'}}
+
         elif self.query_data['Answer_Type'] == "Boolean":
             sparql.setReturnFormat(JSON)
             response = sparql.query().convert()
             flag = len(sparql.query().convert()["results"]['bindings']) > 0
             self.response = { 'headers' : [], 'data': {0:f'Yes' if flag else f'No'}}
+
         else:
-            self.response = "Error!"
+            self.response = "null"
+
+    def getResponse(self):
+        return self.response
