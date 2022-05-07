@@ -39,8 +39,9 @@ def sendQueryAnswerType():
 @app.route('/getEntitiesGeneralizedQuery', methods = ['GET'])
 def getEntitiesGeneralizedQuery():
 	if(request.method == 'GET'):
-		entity_data = MedBot.query_data['Entity_Scores']
-		return jsonify({'entities': entity_data})
+		entity_data =list(MedBot.query_data['Entity_Scores'].keys())
+		entities = {i:entity_data[i] for i in range(len(entity_data))}
+		return jsonify({'entities': entities})
 
 @app.route('/sendSelectedEntities', methods = ['POST'])
 def sendSelectedEntities():
@@ -73,7 +74,7 @@ def sendPrimaryEntityID():
 @app.route('/getPossibleFilters', methods = ['GET'])
 def getPossibleFilters():
 	if(request.method == 'GET'):
-		possible_filters = MedBot.getPossibleFilters()
+		possible_filters = MedBot.findPossibleFilters()
 		return jsonify({'filters': possible_filters})
 
 @app.route('/sendFilters', methods = ['POST'])
@@ -87,7 +88,8 @@ def sendFilters():
 def getPossibleTemplates():
 	if(request.method == 'GET'):
 		MedBot.findTemplates()
-		template_desc = [template[1] for template in MedBot.templates]
+		templates = MedBot.templates
+		template_desc = {i:MedBot.templates[i][1] for i in range(len(templates))}
 		return jsonify({'queries': template_desc})
 
 @app.route('/sendTemplate', methods = ['POST'])

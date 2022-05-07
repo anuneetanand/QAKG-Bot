@@ -25,7 +25,7 @@ class MessageParser {
     } else if (lastMessage === "Enter generic query") {
       console.log("Entered");
       if (USING_BACKEND) {
-        axios.post(`${backendURI}/storeGeneralizedQuery`, {
+        axios.post(`${backendURI}/sendQuery`, {
           params: { query: message },
         });
       }

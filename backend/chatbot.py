@@ -42,14 +42,17 @@ class ChatBot:
         for filter_type in self.query_data["Filters"]:
             if self.query_data["Filters"][filter_type] != "":
                 applied_filters.append(filter_type)
-        return applied_filters
+        applied_filters_json = {i: applied_filters[i] for i in applied_filters}
+        return applied_filters_json
+
 
     def findPossibleFilters(self):
         possible_filters = []
         for filter_type in self.query_data["Filters"]:
             if self.query_data["Filters"][filter_type] == "":
                 possible_filters.append(filter_type)
-        return possible_filters
+        possible_filters_json = {i: possible_filters[i] for i in possible_filters}
+        return possible_filters_json
 
     def updateQueryData(self, new_query_data):
         self.query_data = new_query_data
