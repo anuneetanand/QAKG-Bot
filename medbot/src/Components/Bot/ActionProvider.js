@@ -76,10 +76,14 @@ class ActionProvider {
     let flag = true;
     let needId = true;
     if (USING_BACKEND) {
-      axios.get(`${backendURI}/getQueryRequests`).then((res) => {
-        flag = res["flag"];
-        needId = res["id"];
-      });
+      axios
+        .get(`${backendURI}/getQueryRequests`, {
+          params: { queryMode: "specific" },
+        })
+        .then((res) => {
+          flag = res["flag"];
+          needId = res["id"];
+        });
     }
     if (flag) {
       if (needId) {
@@ -197,9 +201,13 @@ class ActionProvider {
       }
       let filters = ["years"];
       if (USING_BACKEND) {
-        axios.get(`${backendURI}/getQueryRequests`).then((res) => {
-          filters = res["filters"];
-        });
+        axios
+          .get(`${backendURI}/getQueryRequests`, {
+            params: { queryMode: "generalized" },
+          })
+          .then((res) => {
+            filters = res["filters"];
+          });
       }
       if (filters === "none") {
         const message = this.createChatBotMessage(
@@ -226,13 +234,6 @@ class ActionProvider {
         );
         this.addMessageToBotState(message);
       }
-      // const message = this.createChatBotMessage(
-      //   "Select one of the following queries",
-      //   {
-      //     widget: "SampleQueriesGeneralized",
-      //   }
-      // );
-      // this.addMessageToBotState(message);
     } else {
       selectedEntitiesGenericQuery.push(entity);
       const message = this.createChatBotMessage(entity.name);
@@ -243,7 +244,7 @@ class ActionProvider {
   handleUserSelctedGeneralizedQuery = (generalizedQuery) => {
     console.log(generalizedQuery.name + " got it");
     if (USING_BACKEND) {
-      axios.post(`${backendURI}/sendSelectedGeneralizedQuery`, {
+      axios.post(`${backendURI}/sendTemplate`, {
         params: { query: generalizedQuery },
       });
     }
@@ -254,13 +255,6 @@ class ActionProvider {
       }
     );
     this.addMessageToBotState(message);
-    // const message = this.createChatBotMessage(
-    //   "Select filter(s) to apply to your query",
-    //   {
-    //     widget: "FiltersGeneralizedQuery",
-    //   }
-    // );
-    // this.addMessageToBotState(message);
   };
 
   handleUserSelectedFilter = (filter) => {
@@ -268,7 +262,7 @@ class ActionProvider {
       console.log("correct filters?");
       console.log(selectedFiltersGenericQuery);
       if (USING_BACKEND) {
-        axios.post(`${backendURI}/sendFiltersForQuery`, {
+        axios.post(`${backendURI}/sendFilters`, {
           params: { selectedFilters: selectedFiltersGenericQuery },
         });
       }
@@ -303,7 +297,7 @@ class ActionProvider {
     if (confirmation === "Yes") {
       let queryResults = ["2 people have disease B", "5 people took drug A"];
       if (USING_BACKEND) {
-        axios.get(`${backendURI}/getGeneralizedQueryResults`).then((res) => {
+        axios.get(`${backendURI}/getQueryResults`).then((res) => {
           queryResults = res["results"];
         });
       }
@@ -338,6 +332,9 @@ class ActionProvider {
   };
 
   resetGlobalVariables = () => {
+    if (USING_BACKEND) {
+      axios.post(`${backendURI}/restart`);
+    }
     selectedEntitiesGenericQuery = [];
     selectedFiltersGenericQuery = [];
   };
