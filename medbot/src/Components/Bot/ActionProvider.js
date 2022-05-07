@@ -2,6 +2,8 @@ import axios from "axios";
 
 const backendURI = "http://localhost:8000";
 const USING_BACKEND = false;
+var selectedFiltersGenericQuery = [];
+var selectedEntitiesGenericQuery = [];
 class ActionProvider {
   constructor(
     createChatBotMessage,
@@ -16,8 +18,6 @@ class ActionProvider {
     this.createClientMessage = createClientMessage;
     this.stateRef = stateRef;
     this.createCustomMessage = createCustomMessage;
-    this.selectedFiltersGenericQuery = [];
-    this.selectedEntitiesGenericQuery = [];
   }
 
   handleDefault = () => {
@@ -57,11 +57,43 @@ class ActionProvider {
     this.addMessageToBotState(message);
   };
 
-  handleGeneralQuery = () => {
-    const message = this.createChatBotMessage("Enter generic query", {
-      widget: "RestartFromBeginning",
-    });
+  sendAnswerTypeSpecificQueryMessage = () => {
+    const message = this.createChatBotMessage(
+      "Select one of the following answer type",
+      {
+        widget: "AnswerTypeSpecificQuery",
+      }
+    );
     this.addMessageToBotState(message);
+  };
+
+  handleAnswerTypeSpecificQuery = (answerType) => {
+    if (USING_BACKEND) {
+      axios.post(`${backendURI}/sendQueryAnswerType`, {
+        params: { answerType: answerType },
+      });
+    }
+    let flag = true;
+    let needId = true;
+    if (USING_BACKEND) {
+      axios.get(`${backendURI}/getQueryRequests`).then((res) => {
+        flag = res["flag"];
+        needId = res["id"];
+      });
+    }
+    if (flag) {
+      if (needId) {
+        this.handleSpecificEntityId("Enter id in format");
+      } else {
+        this.handleSampleQueriesSpecific();
+      }
+    } else {
+      const message = this.createChatBotMessage(
+        "Not a valid query, start again"
+      );
+      this.addMessageToBotState(message);
+      this.handleRestartFlow();
+    }
   };
 
   handleSpecificEntityId = (messageText) => {
@@ -84,7 +116,7 @@ class ActionProvider {
   handleUserSelctedSpecificQuery = (specificQuery) => {
     console.log(specificQuery + " received yay");
     if (USING_BACKEND) {
-      axios.post(`${backendURI}/sendSelectedSpecificQuery`, {
+      axios.post(`${backendURI}/sendTemplate`, {
         params: { query: specificQuery },
       });
     }
@@ -96,14 +128,14 @@ class ActionProvider {
 
   handleUserConfirmationSpecificQuery = (confirmation) => {
     if (USING_BACKEND) {
-      axios.post(`${backendURI}/sendConfirmationSpecificQuery`, {
+      axios.post(`${backendURI}/sendConfirmation`, {
         params: { choice: confirmation },
       });
     }
     if (confirmation === "Yes") {
       let queryResults = ["2 people have disease B", "5 people took drug A"];
       if (USING_BACKEND) {
-        axios.get(`${backendURI}/getSpecificQueryResults`).then((res) => {
+        axios.get(`${backendURI}/getQueryResults`).then((res) => {
           queryResults = res["results"];
         });
       }
@@ -119,6 +151,32 @@ class ActionProvider {
     }
   };
 
+  handleGeneralQuery = () => {
+    const message = this.createChatBotMessage("Enter generic query", {
+      widget: "RestartFromBeginning",
+    });
+    this.addMessageToBotState(message);
+  };
+
+  sendAnswerTypeGeneralizedQueryMessage = () => {
+    const message = this.createChatBotMessage(
+      "Select one of the following answer type",
+      {
+        widget: "AnswerTypeGeneralizedQuery",
+      }
+    );
+    this.addMessageToBotState(message);
+  };
+
+  handleAnswerTypeGeneralizedQuery = (answerType) => {
+    if (USING_BACKEND) {
+      axios.post(`${backendURI}/sendQueryAnswerType`, {
+        params: { answerType: answerType },
+      });
+    }
+    this.handleGeneralizedQueryEntities();
+  };
+
   handleGeneralizedQueryEntities = () => {
     const message = this.createChatBotMessage(
       "Select all entities which are a part of your query",
@@ -131,20 +189,52 @@ class ActionProvider {
 
   handleUserSelectedEntity = (entity) => {
     if (entity.name === "Stop") {
+      console.log("selected entities: " + selectedEntitiesGenericQuery);
       if (USING_BACKEND) {
         axios.post(`${backendURI}/sendSelectedEntities`, {
-          params: { selectedEntities: this.selectedEntitiesGenericQuery },
+          params: { selectedEntities: selectedEntitiesGenericQuery },
         });
       }
-      const message = this.createChatBotMessage(
-        "Select one of the following queries",
-        {
-          widget: "SampleQueriesGeneralized",
+      let filters = ["years"];
+      if (USING_BACKEND) {
+        axios.get(`${backendURI}/getQueryRequests`).then((res) => {
+          filters = res["filters"];
+        });
+      }
+      if (filters === "none") {
+        const message = this.createChatBotMessage(
+          "Not a valid query, start again"
+        );
+        this.addMessageToBotState(message);
+        this.handleRestartFlow();
+      } else {
+        let filtersApplied = "";
+        filters.forEach((filter) => {
+          filtersApplied += filter + ", ";
+        });
+        if (filtersApplied !== "") {
+          const messageFilterApplied = this.createChatBotMessage(
+            `${filtersApplied} have already been applied`
+          );
+          this.addMessageToBotState(messageFilterApplied);
         }
-      );
-      this.addMessageToBotState(message);
+        const message = this.createChatBotMessage(
+          "Select filter(s) to apply to your query",
+          {
+            widget: "FiltersGeneralizedQuery",
+          }
+        );
+        this.addMessageToBotState(message);
+      }
+      // const message = this.createChatBotMessage(
+      //   "Select one of the following queries",
+      //   {
+      //     widget: "SampleQueriesGeneralized",
+      //   }
+      // );
+      // this.addMessageToBotState(message);
     } else {
-      this.selectedEntitiesGenericQuery.push(entity);
+      selectedEntitiesGenericQuery.push(entity);
       const message = this.createChatBotMessage(entity.name);
       this.addMessageToBotState(message);
     }
@@ -158,34 +248,34 @@ class ActionProvider {
       });
     }
     const message = this.createChatBotMessage(
-      "Select filter(s) to apply to your query",
+      "Is the selected query confirmed?",
       {
-        widget: "FiltersGeneralizedQuery",
+        widget: "ConfirmationGeneralizedQuery",
       }
     );
     this.addMessageToBotState(message);
+    // const message = this.createChatBotMessage(
+    //   "Select filter(s) to apply to your query",
+    //   {
+    //     widget: "FiltersGeneralizedQuery",
+    //   }
+    // );
+    // this.addMessageToBotState(message);
   };
 
   handleUserSelectedFilter = (filter) => {
     if (filter.name === "Stop") {
-      console.log(this.selectedFiltersGenericQuery + " correct filters?");
+      console.log("correct filters?");
+      console.log(selectedFiltersGenericQuery);
       if (USING_BACKEND) {
         axios.post(`${backendURI}/sendFiltersForQuery`, {
-          params: { selectedFilters: this.selectedFiltersGenericQuery },
+          params: { selectedFilters: selectedFiltersGenericQuery },
         });
       }
-      let finalQuery = "What are the number of male patients above age 40?";
-      if (USING_BACKEND) {
-        axios.get(`${backendURI}/getFinalGeneralizedQuery`).then((res) => {
-          finalQuery = res["finalQuery"];
-        });
-      }
-      const finalQueryMessage = this.createChatBotMessage(finalQuery);
-      this.addMessageToBotState(finalQueryMessage);
       const message = this.createChatBotMessage(
-        "Is the above query confirmed?",
+        "Select one of the following queries",
         {
-          widget: "ConfirmationGeneralizedQuery",
+          widget: "SampleQueriesGeneralized",
         }
       );
       this.addMessageToBotState(message);
@@ -196,15 +286,17 @@ class ActionProvider {
   };
 
   saveUserEnteredFilterValue = (filterName, filterValue) => {
-    this.selectedFiltersGenericQuery.push({
+    selectedFiltersGenericQuery.push({
       filterName: filterName,
       filterValue: filterValue,
     });
+    console.log("what????");
+    console.log(selectedFiltersGenericQuery);
   };
 
   handleUserConfirmationGeneralizedQuery = (confirmation) => {
     if (USING_BACKEND) {
-      axios.post(`${backendURI}/sendConfirmationGeneralizedQuery`, {
+      axios.post(`${backendURI}/sendConfirmation`, {
         params: { choice: confirmation },
       });
     }
@@ -246,8 +338,8 @@ class ActionProvider {
   };
 
   resetGlobalVariables = () => {
-    this.selectedEntitiesGenericQuery = [];
-    this.selectedFiltersGenericQuery = [];
+    selectedEntitiesGenericQuery = [];
+    selectedFiltersGenericQuery = [];
   };
 
   addMessageToBotState = (messages) => {

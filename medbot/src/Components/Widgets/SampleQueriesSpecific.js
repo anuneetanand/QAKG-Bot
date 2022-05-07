@@ -15,7 +15,7 @@ const SampleQueriesSpecific = (props) => {
   ];
 
   if (USING_BACKEND) {
-    axios.get(`${backendURI}/getPossibleSpecificQueries`).then((res) => {
+    axios.get(`${backendURI}/getPossibleTemplates`).then((res) => {
       const queries = res["queries"];
       options = [];
       for (var queryID in queries) {

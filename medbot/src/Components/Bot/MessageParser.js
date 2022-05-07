@@ -16,20 +16,12 @@ class MessageParser {
     const lastMessage = messageStack[0].message;
     console.log(messageStack);
     if (lastMessage === "Enter specific query") {
-      let entityStr = "disease";
       if (USING_BACKEND) {
-        axios
-          .get(`${backendURI}/storeSpecificQueryAndReturnEntity`, {
-            params: { query: message },
-          })
-          .then((res) => {
-            entityStr = res["entity"];
-          });
-        entityStr = entityStr["entity"];
+        axios.post(`${backendURI}/sendQuery`, {
+          params: { query: message },
+        });
       }
-      return this.actionProvider.handleSpecificEntityId(
-        `Enter ${entityStr} id`
-      );
+      return this.actionProvider.sendAnswerTypeSpecificQueryMessage();
     } else if (lastMessage === "Enter generic query") {
       console.log("Entered");
       if (USING_BACKEND) {
@@ -37,10 +29,12 @@ class MessageParser {
           params: { query: message },
         });
       }
-      return this.actionProvider.handleGeneralizedQueryEntities();
+      return this.actionProvider.sendAnswerTypeGeneralizedQueryMessage();
     } else if (lastMessage.includes("Enter") && lastMessage.includes("id")) {
       if (USING_BACKEND) {
-        axios.post(`${backendURI}/storeEntityID`, { params: { id: message } });
+        axios.post(`${backendURI}/sendPrimaryEntityID`, {
+          params: { id: message },
+        });
       }
       return this.actionProvider.handleSampleQueriesSpecific();
     } else if (
@@ -48,6 +42,7 @@ class MessageParser {
       lastMessage.includes("value:")
     ) {
       const filterName = lastMessage.split(" ")[1];
+      console.log(filterName + " " + message + " yo");
       this.actionProvider.saveUserEnteredFilterValue(filterName, message);
     }
   };

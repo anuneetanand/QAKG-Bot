@@ -9,6 +9,8 @@ import FiltersGeneralizedQuery from "../Widgets/FiltersGeneralizedQuery.js";
 import ConfirmationGeneralizedQuery from "../Widgets/ConfirmationGeneralizedQuery.js";
 import RestartFromBeginning from "../Widgets/RestartFromBeginning.js";
 import SpecificQueryEntities from "../Widgets/SpecificQueryEntities.js";
+import AnswerTypeSpecificQuery from "../Widgets/AnswerTypeSpecificQuery.js";
+import AnswerTypeGeneralizedQuery from "../Widgets/AnswerTypeGeneralizedQuery.js";
 
 const config = {
   botName: "MedBot",
@@ -76,6 +78,18 @@ const config = {
     {
       widgetName: "SpecificQueryEntities",
       widgetFunc: (props) => <SpecificQueryEntities {...props} />,
+      mapStateToProps: ["messages"],
+    },
+
+    {
+      widgetName: "AnswerTypeSpecificQuery",
+      widgetFunc: (props) => <AnswerTypeSpecificQuery {...props} />,
+      mapStateToProps: ["messages"],
+    },
+
+    {
+      widgetName: "AnswerTypeGeneralizedQuery",
+      widgetFunc: (props) => <AnswerTypeGeneralizedQuery {...props} />,
       mapStateToProps: ["messages"],
     },
 
