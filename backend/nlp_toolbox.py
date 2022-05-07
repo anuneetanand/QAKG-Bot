@@ -27,7 +27,7 @@ class NLP_Toolbox:
         self.findTokens()
         self.findEntityID()
         self.findFilters()
-        self.findAttributes()
+        self.findentitys()
 
         return self.data
 
@@ -53,7 +53,7 @@ class NLP_Toolbox:
         if self.verbose: print("Finding Filters")
 
         self.data['Filters'] = {}
-        self.data['Filters']['age'] = {'val':"",'comp':""}
+        self.data['Filters']['age'] = ""
         self.data['Filters']['gender'] = ""
         self.data['Filters']['administration'] = ""
 
@@ -76,32 +76,32 @@ class NLP_Toolbox:
                 self.data['Filters']['administration'] = term
                 break
         
-    def findAttributes(self):
-        if self.verbose: print("Finding Attributes")
+    def findentitys(self):
+        if self.verbose: print("Finding entitys")
 
         keyword_list = self.cleanText()
-        attribute_scores = {'patient': 0, 'drug': 0, 'condition': 0, 'gender': 0, 'age': 0, 'administration': 0, 'dose':0, 'date':0 }
-        attribute_list = ['patient.n.01','drug.n.01','condition.n.06','gender.n.01','age.n.01','administration.n.03','dose.n.01','date.n.06']
+        Entity_Scores = {'patient': 0, 'drug': 0, 'condition': 0, 'gender': 0, 'age': 0, 'administration': 0, 'dose':0, 'date':0 }
+        entity_list = ['patient.n.01','drug.n.01','condition.n.06','gender.n.01','age.n.01','administration.n.03','dose.n.01','date.n.06']
 
-        for attribute in attribute_list:
+        for entity in entity_list:
             for keyword in keyword_list:
                 score = 0
-                syn1 = wordnet.synset(attribute)
+                syn1 = wordnet.synset(entity)
                 for syn2 in wordnet.synsets(keyword, pos = 'n'):
                     score = max(score, syn1.wup_similarity(syn2))
-                attribute_name = attribute.split('.')[0]
-                attribute_scores[attribute_name] = max(attribute_scores[attribute_name], score)
+                entity_name = entity.split('.')[0]
+                Entity_Scores[entity_name] = max(Entity_Scores[entity_name], score)
 
         for term in self.custom_vocabulary['drugs']:
             if term.lower() in self.text.lower():
-                attribute_scores['drug'] = 1
+                Entity_Scores['drug'] = 1
                 self.data['Snomed_ID'] = self.custom_vocabulary['drugs'][term]
                 break
         
         for term in self.custom_vocabulary['conditions']:
             if term.lower() in self.text.lower():
-                attribute_scores['condition'] = 1
+                Entity_Scores['condition'] = 1
                 self.data['Snomed_ID'] = self.custom_vocabulary['conditions'][term]
                 break
 
-        self.data['Attribute_Scores'] = attribute_scores
+        self.data['Entity_Scores'] = Entity_Scores
