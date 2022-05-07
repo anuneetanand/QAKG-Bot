@@ -1,8 +1,8 @@
 import "axios";
 import axios from "axios";
 
-const backendURI = "http://localhost:8000";
-const USING_BACKEND = false;
+const backendURI = "http://127.0.0.1:5000";
+const USING_BACKEND = true;
 
 class MessageParser {
   constructor(actionProvider, state) {

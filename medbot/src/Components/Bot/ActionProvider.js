@@ -1,7 +1,7 @@
 import axios from "axios";
 
-const backendURI = "http://localhost:8000";
-const USING_BACKEND = false;
+const backendURI = "http://127.0.0.1:5000";
+const USING_BACKEND = true;
 var selectedFiltersGenericQuery = [];
 var selectedEntitiesGenericQuery = [];
 class ActionProvider {
@@ -36,7 +36,7 @@ class ActionProvider {
   };
 
   handleSpecificQuery = () => {
-    axios.post(`http://127.0.0.1:5000/home`, {
+    axios.post(`${backendURI}/home`, {
       params: { topic: "helloooooo" },
     }).then(res => {
       console.log("ssssupppp");
