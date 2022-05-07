@@ -14,6 +14,13 @@ class ChatBot:
         self.response = ""
         self.verbose = False
 
+    def restart(self):
+        self.user_query = ""
+        self.query_data = {}
+        self.templates = []
+        self.sparql_query = ""
+        self.response = ""
+
     def setQuery(self, user_query):
         self.user_query = user_query
         self.query_data = self.NLPToolbox.parse(self.user_query)

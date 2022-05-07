@@ -5,7 +5,6 @@ confidence_threshold = 0.6
 sparqlEndpoint = "http://Anuneets-MacBook-Air.local:7200/repositories/IFHP"
 MedBot = ChatBot(sparql_endpoint = sparqlEndpoint, threshold = confidence_threshold)
 userFeedback = {"positive": 0, "negative": 0}
-query_mode = ""
 app = Flask(__name__)
 
 @app.route('/', methods = ['GET', 'POST'])
@@ -50,9 +49,11 @@ def sendSelectedEntities():
 			query_data[entity['name']] = entity['score']
 		MedBot.updateQueryData(query_data)
 
-@app.route('/getQueryRequests', methods = ['GET'])
+@app.route('/getQueryRequests', methods = ['GET', 'POST'])
 def getQueryRequests():
-	if(request.method == 'GET'):
+	if(request.method == 'POST'):
+		data = request.get_json()
+		query_mode = data['query_mode']
 		if query_mode == "generalized":
 			applied_filters = MedBot.findAppliedFilters()
 			return jsonify({'data': {'flag': True, 'filters': applied_filters}})
@@ -109,6 +110,11 @@ def sendConfirmation():
 def getQueryResults():
 	if(request.method == 'GET'):
 		return jsonify({'data': MedBot.response})
+
+@app.route('/restart', methods = ['GET'])
+def restart():
+	if(request.method == 'GET'):
+		MedBot.restart()
 
 if __name__ == '__main__':
 	app.run(debug = True)
