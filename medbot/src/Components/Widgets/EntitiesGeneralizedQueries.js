@@ -20,7 +20,7 @@ const EntitiesGeneralizedQueries = (props) => {
 
   if (USING_BACKEND) {
     axios.get(`${backendURI}/getEntitiesGeneralizedQuery`).then((res) => {
-      const entities = res["entities"];
+      const entities = res.data["entities"];
       options = [];
       for (var entityID in entities) {
         options.push({ name: entities[entityID], id: entityID });

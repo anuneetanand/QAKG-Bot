@@ -36,6 +36,12 @@ class ActionProvider {
   };
 
   handleSpecificQuery = () => {
+    axios.post(`http://127.0.0.1:5000/home`, {
+      params: { topic: "helloooooo" },
+    }).then(res => {
+      console.log("ssssupppp");
+      console.log(res);
+    });
     const message = this.createChatBotMessage(
       "Select one of the following specific query entity",
       {
@@ -81,8 +87,8 @@ class ActionProvider {
           params: { queryMode: "specific" },
         })
         .then((res) => {
-          flag = res["flag"];
-          needId = res["id"];
+          flag = res.data["flag"];
+          needId = res.data["id"];
         });
     }
     if (flag) {
@@ -121,7 +127,7 @@ class ActionProvider {
     console.log(specificQuery + " received yay");
     if (USING_BACKEND) {
       axios.post(`${backendURI}/sendTemplate`, {
-        params: { query: specificQuery },
+        params: { id: specificQuery.id },
       });
     }
     const message = this.createChatBotMessage("Is your query confirmed?", {
@@ -133,14 +139,14 @@ class ActionProvider {
   handleUserConfirmationSpecificQuery = (confirmation) => {
     if (USING_BACKEND) {
       axios.post(`${backendURI}/sendConfirmation`, {
-        params: { choice: confirmation },
+        params: { confirmation: confirmation },
       });
     }
     if (confirmation === "Yes") {
       let queryResults = ["2 people have disease B", "5 people took drug A"];
       if (USING_BACKEND) {
         axios.get(`${backendURI}/getQueryResults`).then((res) => {
-          queryResults = res["results"];
+          queryResults = res.data["results"];
         });
       }
       queryResults.forEach((queryResult) => {
@@ -196,20 +202,22 @@ class ActionProvider {
       console.log("selected entities: " + selectedEntitiesGenericQuery);
       if (USING_BACKEND) {
         axios.post(`${backendURI}/sendSelectedEntities`, {
-          params: { selectedEntities: selectedEntitiesGenericQuery },
+          params: { entities: selectedEntitiesGenericQuery },
         });
       }
       let filters = ["years"];
+      let flag = true;
       if (USING_BACKEND) {
         axios
           .get(`${backendURI}/getQueryRequests`, {
             params: { queryMode: "generalized" },
           })
           .then((res) => {
-            filters = res["filters"];
+            filters = res.data["filters"];
+            flag = res.data["flag"];
           });
       }
-      if (filters === "none") {
+      if (!flag) {
         const message = this.createChatBotMessage(
           "Not a valid query, start again"
         );
@@ -263,7 +271,7 @@ class ActionProvider {
       console.log(selectedFiltersGenericQuery);
       if (USING_BACKEND) {
         axios.post(`${backendURI}/sendFilters`, {
-          params: { selectedFilters: selectedFiltersGenericQuery },
+          params: { filters: selectedFiltersGenericQuery },
         });
       }
       const message = this.createChatBotMessage(
@@ -291,7 +299,7 @@ class ActionProvider {
   handleUserConfirmationGeneralizedQuery = (confirmation) => {
     if (USING_BACKEND) {
       axios.post(`${backendURI}/sendConfirmation`, {
-        params: { choice: confirmation },
+        params: { confirmation: confirmation },
       });
     }
     if (confirmation === "Yes") {

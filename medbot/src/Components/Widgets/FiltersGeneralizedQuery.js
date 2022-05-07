@@ -16,7 +16,7 @@ const FiltersGeneralizedQuery = (props) => {
 
   if (USING_BACKEND) {
     axios.get(`${backendURI}/getPossibleFilters`).then((res) => {
-      const filters = res["filters"];
+      const filters = res.data["filters"];
       options = [];
       for (var filterID in filters) {
         options.push({ name: filters[filterID], id: filterID });

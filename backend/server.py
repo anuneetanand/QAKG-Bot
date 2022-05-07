@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 from chatbot import ChatBot
 
 confidence_threshold = 0.6
@@ -6,43 +7,45 @@ sparqlEndpoint = "http://Anuneets-MacBook-Air.local:7200/repositories/IFHP"
 MedBot = ChatBot(sparql_endpoint = sparqlEndpoint, threshold = confidence_threshold)
 userFeedback = {"positive": 0, "negative": 0}
 app = Flask(__name__)
+cors = CORS(app)
 
-@app.route('/', methods = ['GET', 'POST'])
+@app.route('/home', methods = ['GET', 'POST'])
 def home():
 	if(request.method == 'GET'):
 		data = "Hello!"
 	if(request.method == 'POST'):
-		data = request.get_json()
-		return jsonify({'data': data})
+		data = request.get_json()['params']
+		print(data)
+		return jsonify({'data': data, "xyz": ["1"], "abcd": {1:2}})
 
 @app.route('/sendQueryTopic', methods = ['POST'])
 def sendQueryTopic():
 	if(request.method == 'POST'):
-		data = request.get_json()
+		data = request.get_json()['params']
 		MedBot.setTopic(data['topic'])
 
 @app.route('/sendQuery', methods = ['POST'])
 def sendQuery():
 	if(request.method == 'POST'):
-		data = request.get_json()
+		data = request.get_json()['params']
 		MedBot.setQuery(data['query'])
 
 @app.route('/sendQueryAnswerType', methods = ['POST'])
 def sendQueryAnswerType():
 	if(request.method == 'POST'):
-		data = request.get_json()
-		MedBot.setAnswerType(data['answer_type'])
+		data = request.get_json()['params']
+		MedBot.setAnswerType(data['answerType'])
 
 @app.route('/getEntitiesGeneralizedQuery', methods = ['GET'])
 def getEntitiesGeneralizedQuery():
 	if(request.method == 'GET'):
 		entity_data = MedBot.query_data['Entity_Scores']
-		return jsonify({'data': entity_data})
+		return jsonify({'entities': entity_data})
 
 @app.route('/sendSelectedEntities', methods = ['POST'])
 def sendSelectedEntities():
 	if(request.method == 'POST'):
-		data = request.get_json()
+		data = request.get_json()['params']
 		query_data = MedBot.query_data
 		updated_entities = data['entities']
 		for entity in updated_entities:
@@ -52,31 +55,31 @@ def sendSelectedEntities():
 @app.route('/getQueryRequests', methods = ['GET', 'POST'])
 def getQueryRequests():
 	if(request.method == 'POST'):
-		data = request.get_json()
-		query_mode = data['query_mode']
+		data = request.get_json()['params']
+		query_mode = data['queryMode']
 		if query_mode == "generalized":
 			applied_filters = MedBot.findAppliedFilters()
-			return jsonify({'data': {'flag': True, 'filters': applied_filters}})
+			return jsonify({'flag': True, 'filters': applied_filters})
 		else:
 			checkID = MedBot.validateID()
-			return jsonify({'data': {'flag': True, 'id': checkID}})
+			return jsonify({'flag': True, 'id': checkID})
 
 @app.route('/sendPrimaryEntityID', methods = ['POST'])
 def sendPrimaryEntityID():
 	if(request.method == 'POST'):
-		data = request.get_json()
+		data = request.get_json()['params']
 		MedBot.setPrimaryEntityID(data['id'])
 
 @app.route('/getPossibleFilters', methods = ['GET'])
 def getPossibleFilters():
 	if(request.method == 'GET'):
 		possible_filters = MedBot.getPossibleFilters()
-		return jsonify({'data': {'flag': True, 'filters': possible_filters}})
+		return jsonify({'filters': possible_filters})
 
 @app.route('/sendFilters', methods = ['POST'])
 def sendFilters():
 	if(request.method == 'POST'):
-		data = request.get_json()
+		data = request.get_json()['params']
 		filters = data['filters']
 		MedBot.query_data['filters'] = filters
 
@@ -85,12 +88,12 @@ def getPossibleTemplates():
 	if(request.method == 'GET'):
 		MedBot.findTemplates()
 		template_desc = [template[1] for template in MedBot.templates]
-		return jsonify({'data': template_desc})
+		return jsonify({'queries': template_desc})
 
 @app.route('/sendTemplate', methods = ['POST'])
 def sendTemplate():
 	if(request.method == 'POST'):
-		data = request.get_json()
+		data = request.get_json()['params']
 		template_id = data['id']
 		best_template = MedBot.templates[template_id]
 		MedBot.setTemplate(best_template)
@@ -98,8 +101,8 @@ def sendTemplate():
 @app.route('/sendConfirmation', methods = ['POST'])
 def sendConfirmation():
 	if(request.method == 'POST'):
-		data = request.get_json()
-		if(data['confirmation'] == 'yes'):
+		data = request.get_json()['params']
+		if(data['confirmation'] == 'Yes'):
 			userFeedback['positive'] += 1
 			MedBot.executeQuery()
 		else:
@@ -109,11 +112,11 @@ def sendConfirmation():
 @app.route('/getQueryResults', methods = ['GET'])
 def getQueryResults():
 	if(request.method == 'GET'):
-		return jsonify({'data': MedBot.response})
+		return jsonify({'results': MedBot.response})
 
-@app.route('/restart', methods = ['GET'])
+@app.route('/restart', methods = ['POST'])
 def restart():
-	if(request.method == 'GET'):
+	if(request.method == 'POST'):
 		MedBot.restart()
 
 if __name__ == '__main__':

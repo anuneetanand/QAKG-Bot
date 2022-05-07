@@ -16,7 +16,7 @@ const SampleQueriesGeneralized = (props) => {
 
   if (USING_BACKEND) {
     axios.get(`${backendURI}/getPossibleGeneralizedQueries`).then((res) => {
-      const queries = res["queries"];
+      const queries = res.data["queries"];
       options = [];
       for (var queryID in queries) {
         options.push({ name: queries[queryID], id: queryID });
