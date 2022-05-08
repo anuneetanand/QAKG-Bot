@@ -3,12 +3,12 @@ import "../../styles.css";
 const Menu = (props) => {
   const options = [
     {
-      name: "Query pertaining to a specific entity",
+      name: "Query about a specific entity",
       handler: props.actionProvider.handleSpecificQuery,
       id: 1,
     },
     {
-      name: "Generalized query over the knowledge base",
+      name: "Query over the knowledge base",
       handler: props.actionProvider.handleGeneralQuery,
       id: 2,
     },

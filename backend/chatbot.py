@@ -23,7 +23,9 @@ class ChatBot:
 
     def setQuery(self, user_query):
         self.user_query = user_query
-        self.query_data = self.NLPToolbox.parse(self.user_query)
+        data = self.NLPToolbox.parse(self.user_query)
+        for key in data:
+            self.query_data[key] = data[key]
 
     def setTopic(self, topic):
         self.query_data['Topic'] = topic
@@ -48,6 +50,12 @@ class ChatBot:
                 other_entities.append(entity)
         other_entities_json = {i: other_entities[i] for i in other_entities}
         return other_entities_json
+
+    def setPrimaryEntityID(self, entity_id):
+        if self.query_data['Topic'] == "patient":
+            self.query_data['Patient_ID'] = [entity_id]
+        else:
+            self.query_data['Snomed_ID'] = [entity_id]
 
     def validateID(self):
         if self.query_data['Topic'] == "patient":

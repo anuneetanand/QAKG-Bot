@@ -51,7 +51,7 @@ class NLP_Toolbox:
         if self.verbose: print("Finding Filters")
 
         self.data['Filters'] = {}
-        self.data['Filters']['age'] = ""
+        self.data['Filters']['age'] = {'val':"",'comp':""}
         self.data['Filters']['gender'] = ""
         self.data['Filters']['administration'] = ""
 

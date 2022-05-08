@@ -15,7 +15,7 @@ cors = CORS(app, headers=["Access-Control-Allow-Origin", "Content-Type", "Author
 def sendQueryTopic():
 	if(request.method == 'POST'):
 		data = request.get_json()['params']
-		MedBot.setTopic(data['topic'])
+		MedBot.setTopic(data['topic'].lower())
 		return Response(status=200)
 
 @app.route('/sendQuery', methods = ['POST'])
@@ -86,10 +86,16 @@ def sendFilters():
 
 @app.route('/getPossibleTemplates', methods = ['GET'])
 def getPossibleTemplates():
+	print("lol")
+	print("\n")
+	print(MedBot.getQueryData())
+	print("\n")
 	if(request.method == 'GET'):
 		MedBot.findTemplates()
 		templates = MedBot.getTemplates()
-		template_desc = {i:MedBot.templates[i][1] for i in range(len(templates))}
+		print(templates)
+		template_desc = {i:templates[i][1] for i in range(len(templates))}
+		print(template_desc)
 		return jsonify({'queries': template_desc})
 
 @app.route('/sendTemplate', methods = ['POST'])

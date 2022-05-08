@@ -26,7 +26,8 @@ const SpecificQueryEntities = (props) => {
         onClick={() => {
           if (option.name === "Restart")
             props.actionProvider.handleRestartFlow();
-          else props.actionProvider.handleSpecificQueryEntity(option.name);
+          else 
+            props.actionProvider.handleSpecificQueryEntity(option.name);
         }}
       >
         {option.name}
