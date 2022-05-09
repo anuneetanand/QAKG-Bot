@@ -17,6 +17,7 @@ class ChatBot:
 
     def restart(self):
         self.user_query = ""
+        self.query_type = ""
         self.query_data = {}
         self.templates = []
         self.sparql_query = ""
@@ -50,7 +51,7 @@ class ChatBot:
         entity_scores = self.query_data['Entity_Scores']
         other_entities = []
         for entity in entity_scores:
-            if entity_scores[entity] > self.threshold:
+            if entity_scores[entity] < self.threshold:
                 other_entities.append(entity)
         other_entities_json = {i: other_entities[i] for i in other_entities}
         return other_entities_json
@@ -68,6 +69,7 @@ class ChatBot:
             return len(self.query_data['Snomed_ID']) == 1
 
     def findAppliedFilters(self):
+        # ToDo: Add Filter Desc
         applied_filters = []
         for filter_type in self.query_data["Filters"]:
             if self.query_data["Filters"][filter_type] != "":
@@ -76,6 +78,7 @@ class ChatBot:
         return applied_filters_json
 
     def findPossibleFilters(self):
+        # ToDo: Add Filter Desc
         possible_filters = []
         for filter_type in self.query_data["Filters"]:
             if self.query_data["Filters"][filter_type] == "":
@@ -101,13 +104,13 @@ class ChatBot:
 
             if Check["drug"]:
                 template = get_drug_info(self.query_data['Patient_ID'][0], Check["dose"], Check["administration"], Check["date"])
-                description = f'Information about drugs {"dosage" if Check["dose"] else ""} {"route" if Check["administration"] else ""} {"duration" if Check["dose"] else ""} given to patient with ID : {self.query_data["Patient_ID"][0]}'
+                description = f'Information about drugs {"dosage" if Check["dose"] else ""} {"route" if Check["administration"] else ""} {"duration" if Check["dose"] else ""} given to patient with ID {self.query_data["Patient_ID"][0]}'
                 template_score = (Score["patient"]+Score["dose"]+Score["administration"]+Score["date"])/4
                 Templates.append((template, description, template_score))
 
             if Check["condition"]:
                 template = get_patient_disease_info(self.query_data['Patient_ID'][0], Check["date"])
-                description = f'Information about diseases {"and their duration" if Check["date"] else ""} that affected patient with ID : {self.query_data["Patient_ID"][0]}'
+                description = f'Information about diseases {"and their duration" if Check["date"] else ""} that affected patient with ID {self.query_data["Patient_ID"][0]}'
                 template_score = (Score["patient"]+Score["date"])/2
                 Templates.append((template, description, template_score))
 
@@ -184,7 +187,6 @@ class ChatBot:
         elif self.query_data['Answer_Type'] == "Record":
             sparql.setReturnFormat(JSON)
             response = sparql.query().convert()
-            print(response)
             record = {}
             record['headers'] = response['head']['vars']
             record['data'] = []

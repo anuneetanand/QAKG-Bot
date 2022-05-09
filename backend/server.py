@@ -51,7 +51,7 @@ def sendSelectedEntities():
 	if(request.method == 'POST'):
 		data = request.get_json()['params']
 		query_data = MedBot.getQueryData()
-		updated_entities = data['entities']
+		updated_entities = data['selected_entities']
 		for entity in updated_entities:
 			query_data['Entity_Scores'][entity] = updated_entities[entity]
 		MedBot.setQueryData(query_data)
@@ -97,7 +97,6 @@ def getPossibleTemplates():
 		MedBot.findTemplates()
 		templates = MedBot.getTemplates()
 		template_desc = {i:templates[i][1] for i in range(len(templates))}
-		print(template_desc)
 		return jsonify({'queries': template_desc})
 
 @app.route('/sendTemplate', methods = ['POST'])
@@ -105,9 +104,11 @@ def sendTemplate():
 	if(request.method == 'POST'):
 		data = request.get_json()['params']
 		template_id = int(data['id'])
+		# ToDo: Check if template_id is valid
+		if template_id > len(MedBot.getTemplates()):
+			userFeedback['negative'] += 1
 		best_template = MedBot.getTemplates()[template_id][0]
 		MedBot.prepareQuery(best_template)
-		print(template_id)
 		return Response(status=200)
 
 @app.route('/sendConfirmation', methods = ['POST'])
@@ -124,7 +125,6 @@ def sendConfirmation():
 
 @app.route('/getQueryResults', methods = ['GET'])
 def getQueryResults():
-	print("Hellooooo")
 	if(request.method == 'GET'):
 		query_results = MedBot.getResponse()
 		return jsonify({'results': query_results })

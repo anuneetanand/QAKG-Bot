@@ -25,9 +25,9 @@ class NLP_Toolbox:
         self.data = {}
         self.text = text
         self.findTokens()
+        self.findEntities()
         self.findEntityID()
         self.findFilters()
-        self.findEntities()
 
         return self.data
 

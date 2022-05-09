@@ -37,7 +37,7 @@ def get_drug_info(snomed_id, route = False):
     var1, var2 = "?drug_name", "?route"
 
     return f"""
-    SELECT {var1} {var2 if route else ""} WHERE {{
+    SELECT DISTINCT {var1} {var2 if route else ""} WHERE {{
         ?drug a schema:Drug .
         ?drug schema:snomed_id "{snomed_id}"^^xsd:integer .
         ?drug rdfs:label {var1} .
@@ -50,7 +50,7 @@ def get_drug_list(route = ""):
     var1, var2 = "?snomed_ID", "?drug_name"
     
     return f"""
-    SELECT {var1} {var2} WHERE {{
+    SELECT DISTINCT {var1} {var2} WHERE {{
         ?drug a schema:Drug .
         ?drug schema:snomed_id {var1} .
         ?drug rdfs:label {var2} .
@@ -111,7 +111,7 @@ def get_patient_disease_info(patient_id, date = False):
     var1, var2, var3 = "?disease", "?onSet", "?offSet"
 
     return f"""
-    SELECT DISTINCT {var1} {var2 if date else ""} {var3 if date else ""} WHERE {{
+    SELECT {var1} {var2 if date else ""} {var3 if date else ""} WHERE {{
         ?person a schema:Patient.
         ?person schema:hasPatientID "{patient_id}"^^xsd:str .
         ?person schema:hasCondition ?indCond .
@@ -127,7 +127,7 @@ def get_patient_disease_list(age = "", age_comp = "", gender = ""):
     var1, var2, var3, var4 = "?patient_id", "?age", "?gender", "?disease"
 
     return f"""
-    SELECT DISTINCT {var1} {var2} {var3} {var4} WHERE {{
+    SELECT {var1} {var2} {var3} {var4} WHERE {{
         ?person a schema:Patient.
         ?person schema:hasPatientID {var1} .
         ?person schema:age {var2} .
