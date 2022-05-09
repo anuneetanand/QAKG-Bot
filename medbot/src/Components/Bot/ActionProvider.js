@@ -70,6 +70,22 @@ class ActionProvider {
     }
   };
 
+  handleGenericQueryFilters = () => {
+    let filters = [];
+    if (USING_BACKEND) {
+      axios.get(`${backendURI}/getPossibleFilters`, {
+        params: { 'lol':'lol' },
+      }).then((res) => {
+        filters = res.data['filters'];
+        filters.forEach(filter => {
+          const message = this.createChatBotMessage(filter);
+          this.addMessageToBotState(message);
+        });
+      this.handleQueryTemplates();
+      })
+  }
+};
+
   sendAnswerTypeMessage = () => {
     const message = this.createChatBotMessage(
       "Select the desired answer type",
@@ -135,14 +151,11 @@ class ActionProvider {
           flag = res.data["flag"];
           filters = res.data["filters"];
           if (flag) {
-            if (filters.length > 0) {
-              const message = this.createChatBotMessage(filters, {
-                widget: "RestartFlow",
-              });
-              this.addMessageToBotState(message);
-            } else {
-              this.handleQueryTemplatess();
-            }
+                filters.forEach((filter) => {
+                  const message = this.createChatBotMessage(filter);
+                  this.addMessageToBotState(message);
+                });
+                this.handleGenericQueryFilters()
           } else {
             const message = this.createChatBotMessage(
               "Not a valid query, please start again"
@@ -228,98 +241,98 @@ class ActionProvider {
     }
   };
 
-  handleGenericQueryEntities = () => {
-    const message = this.createChatBotMessage(
-      "Select all entities which are a part of your query",
-      {
-        widget: "EntitiesGenericQueries",
-      }
-    );
-    this.addMessageToBotState(message);
-  };
+  // handleGenericQueryEntities = () => {
+  //   const message = this.createChatBotMessage(
+  //     "Select all entities which are a part of your query",
+  //     {
+  //       widget: "EntitiesGenericQueries",
+  //     }
+  //   );
+  //   this.addMessageToBotState(message);
+  // };
 
-  handleUserSelectedEntity = (entity) => {
-    if (entity.name === "Stop") {
-      console.log("selected entities: " + selectedEntitiesGenericQuery);
-      if (USING_BACKEND) {
-        axios.post(`${backendURI}/sendSelectedEntities`, {
-          params: { entities: selectedEntitiesGenericQuery },
-        });
-      }
-      let filters = ["years"];
-      let flag = true;
-      if (USING_BACKEND) {
-        axios
-          .get(`${backendURI}/getQueryRequests`, {
-            params: { queryMode: "Generic" },
-          })
-          .then((res) => {
-            filters = res.data["filters"];
-            flag = res.data["flag"];
-          });
-      }
-      if (!flag) {
-        const message = this.createChatBotMessage(
-          "Not a valid query, start again"
-        );
-        this.addMessageToBotState(message);
-        this.handleRestartFlow();
-      } else {
-        let filtersApplied = "";
-        filters.forEach((filter) => {
-          filtersApplied += filter + ", ";
-        });
-        if (filtersApplied !== "") {
-          const messageFilterApplied = this.createChatBotMessage(
-            `${filtersApplied} have already been applied`
-          );
-          this.addMessageToBotState(messageFilterApplied);
-        }
-        const message = this.createChatBotMessage(
-          "Select filter(s) to apply to your query",
-          {
-            widget: "FiltersGenericQuery",
-          }
-        );
-        this.addMessageToBotState(message);
-      }
-    } else {
-      selectedEntitiesGenericQuery.push(entity);
-      const message = this.createChatBotMessage(entity.name);
-      this.addMessageToBotState(message);
-    }
-  };
+  // handleUserSelectedEntity = (entity) => {
+  //   if (entity.name === "Stop") {
+  //     console.log("selected entities: " + selectedEntitiesGenericQuery);
+  //     if (USING_BACKEND) {
+  //       axios.post(`${backendURI}/sendSelectedEntities`, {
+  //         params: { entities: selectedEntitiesGenericQuery },
+  //       });
+  //     }
+  //     let filters = ["years"];
+  //     let flag = true;
+  //     if (USING_BACKEND) {
+  //       axios
+  //         .get(`${backendURI}/getQueryRequests`, {
+  //           params: { queryMode: "Generic" },
+  //         })
+  //         .then((res) => {
+  //           filters = res.data["filters"];
+  //           flag = res.data["flag"];
+  //         });
+  //     }
+  //     if (!flag) {
+  //       const message = this.createChatBotMessage(
+  //         "Not a valid query, start again"
+  //       );
+  //       this.addMessageToBotState(message);
+  //       this.handleRestartFlow();
+  //     } else {
+  //       let filtersApplied = "";
+  //       filters.forEach((filter) => {
+  //         filtersApplied += filter + ", ";
+  //       });
+  //       if (filtersApplied !== "") {
+  //         const messageFilterApplied = this.createChatBotMessage(
+  //           `${filtersApplied} have already been applied`
+  //         );
+  //         this.addMessageToBotState(messageFilterApplied);
+  //       }
+  //       const message = this.createChatBotMessage(
+  //         "Select filter(s) to apply to your query",
+  //         {
+  //           widget: "FiltersGenericQuery",
+  //         }
+  //       );
+  //       this.addMessageToBotState(message);
+  //     }
+  //   } else {
+  //     selectedEntitiesGenericQuery.push(entity);
+  //     const message = this.createChatBotMessage(entity.name);
+  //     this.addMessageToBotState(message);
+  //   }
+  // };
 
-  handleUserSelectedFilter = (filter) => {
-    if (filter.name === "Stop") {
-      console.log("correct filters?");
-      console.log(selectedFiltersGenericQuery);
-      if (USING_BACKEND) {
-        axios.post(`${backendURI}/sendFilters`, {
-          params: { filters: selectedFiltersGenericQuery },
-        });
-      }
-      const message = this.createChatBotMessage(
-        "Select one of the following queries",
-        {
-          widget: "SampleQueriesGeneric",
-        }
-      );
-      this.addMessageToBotState(message);
-    } else {
-      const message = this.createChatBotMessage(`Enter ${filter.name} value:`);
-      this.addMessageToBotState(message);
-    }
-  };
+  // handleUserSelectedFilter = (filter) => {
+  //   if (filter.name === "Stop") {
+  //     console.log("correct filters?");
+  //     console.log(selectedFiltersGenericQuery);
+  //     if (USING_BACKEND) {
+  //       axios.post(`${backendURI}/sendFilters`, {
+  //         params: { filters: selectedFiltersGenericQuery },
+  //       });
+  //     }
+  //     const message = this.createChatBotMessage(
+  //       "Select one of the following queries",
+  //       {
+  //         widget: "SampleQueriesGeneric",
+  //       }
+  //     );
+  //     this.addMessageToBotState(message);
+  //   } else {
+  //     const message = this.createChatBotMessage(`Enter ${filter.name} value:`);
+  //     this.addMessageToBotState(message);
+  //   }
+  // };
 
-  saveUserEnteredFilterValue = (filterName, filterValue) => {
-    selectedFiltersGenericQuery.push({
-      filterName: filterName,
-      filterValue: filterValue,
-    });
-    console.log("what????");
-    console.log(selectedFiltersGenericQuery);
-  };
+  // saveUserEnteredFilterValue = (filterName, filterValue) => {
+  //   selectedFiltersGenericQuery.push({
+  //     filterName: filterName,
+  //     filterValue: filterValue,
+  //   });
+  //   console.log("what????");
+  //   console.log(selectedFiltersGenericQuery);
+  // };
 
   handleStop = () => {
     this.resetGlobalVariables();

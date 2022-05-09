@@ -83,6 +83,7 @@ def sendPrimaryEntityID():
 def getPossibleFilters():
 	if(request.method == 'GET'):
 		possible_filters = MedBot.findPossibleFilters()
+		print("possible filters: ", possible_filters)
 		return jsonify({'filters': possible_filters})
 
 @app.route('/sendFilters', methods = ['POST'])

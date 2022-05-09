@@ -108,7 +108,7 @@ def get_patient_drug_list(age = "", age_comp = "", gender = "", route = ""):
     """
 
 def get_patient_condition_info(patient_id, date = False):
-    var1, var2, var3 = "?condition", "?onSet", "?offSet"
+    var1, var2, var3 = "?condition_name", "?onSet", "?offSet"
 
     return f"""
     SELECT {var1} {var2 if date else ""} {var3 if date else ""} WHERE {{

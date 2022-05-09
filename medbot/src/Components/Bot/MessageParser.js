@@ -34,14 +34,7 @@ class MessageParser {
         axios.post(`${backendURI}/sendPrimaryEntityID`, {
           params: { id: message },
         }).then(res => {return this.actionProvider.handleQueryTemplates();});
-    }} else if (
-      lastMessage.includes("Enter") &&
-      lastMessage.includes("value:")
-    ) {
-      const filterName = lastMessage.split(" ")[1];
-      console.log(filterName + " " + message + " yo");
-      this.actionProvider.saveUserEnteredFilterValue(filterName, message);
-    }
+    }} 
   };
 }
 

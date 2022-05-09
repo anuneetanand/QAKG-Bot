@@ -69,22 +69,24 @@ class ChatBot:
             return len(self.query_data['Snomed_ID']) == 1
 
     def findAppliedFilters(self):
-        # ToDo: Add Filter Desc
-        applied_filters = []
-        for filter_type in self.query_data["Filters"]:
-            if self.query_data["Filters"][filter_type] != "":
-                applied_filters.append(filter_type)
-        applied_filters_json = {i: applied_filters[i] for i in applied_filters}
-        return applied_filters_json
+        applied_filters = ["The following filters were applied automatically :"]
+        if self.query_data["Filters"]["age"]["val"] and self.query_data["Filters"]["age"]["comp"]:
+            applied_filters.append(" Age "+self.query_data["Filters"]["age"]['comp']+" "+self.query_data["Filters"]["age"]['val'])
+        if self.query_data["Filters"]["gender"]:
+            applied_filters.append("Gender :", self.query_data["Filters"]["gender"])
+        if self.query_data["Filters"]["administration"]:
+            applied_filters.append("Route of Administration :", self.query_data["Filters"]["administration"])
+        return applied_filters
 
     def findPossibleFilters(self):
-        # ToDo: Add Filter Desc
-        possible_filters = []
-        for filter_type in self.query_data["Filters"]:
-            if self.query_data["Filters"][filter_type] == "":
-                possible_filters.append(filter_type)
-        possible_filters_json = {i: possible_filters[i] for i in possible_filters}
-        return possible_filters_json
+        possible_filters = ["The following filters are possible :"]
+        if not self.query_data["Filters"]["age"]["val"] or not self.query_data["Filters"]["age"]["comp"]:
+            possible_filters.append(" Age (Eg: Age < 30)")
+        if not self.query_data["Filters"]["gender"]:
+            possible_filters.append("Gender (Eg: Gender = M)")
+        if not self.query_data["Filters"]["administration"]:
+            possible_filters.append("Route of Administration (Eg: Oral)")
+        return possible_filters
 
     def getQueryData(self):
         return self.query_data
@@ -103,28 +105,28 @@ class ChatBot:
         if self.query_data['Topic'] == "patient" and len(self.query_data['Patient_ID']):
 
             if Check["drug"]:
-                template = get_drug_info(self.query_data['Patient_ID'][0], Check["dose"], Check["administration"], Check["date"])
-                description = f'Information about drugs {"dosage" if Check["dose"] else ""} {"route" if Check["administration"] else ""} {"duration" if Check["dose"] else ""} given to patient with ID {self.query_data["Patient_ID"][0]}'
-                template_score = (Score["patient"]+Score["dose"]+Score["administration"]+Score["date"])/4
+                template = get_patient_drug_info(self.query_data['Patient_ID'][0], Check["dose"], Check["administration"], Check["date"])
+                description = f'Information about drugs {"dosage" if Check["dose"] else ""} {"route" if Check["administration"] else ""} {"duration" if Check["date"] else ""} given to patient with ID {self.query_data["Patient_ID"][0]}'
+                template_score = (Score["patient"]+Score["dose"]+Score["administration"]+Score["date"])/(int(Check["patient"])+int(Check["dose"])+int(Check["administration"])+int(Check["date"]))
                 Templates.append((template, description, template_score))
 
             if Check["condition"]:
                 template = get_patient_condition_info(self.query_data['Patient_ID'][0], Check["date"])
                 description = f'Information about conditions {"and their duration" if Check["date"] else ""} that affected patient with ID {self.query_data["Patient_ID"][0]}'
-                template_score = (Score["patient"]+Score["date"])/2
+                template_score = (Score["patient"]+Score["date"])/(int(Check["patient"])+int(Check["date"]))
                 Templates.append((template, description, template_score))
 
             if Check["age"] or Check["gender"]:
                 template = get_patient_info(self.query_data['Patient_ID'][0], True, True)
                 description = f'Information about age and gender of patient with ID : {self.query_data["Patient_ID"][0]}'
-                template_score = (Score["patient"]+Score["age"]+Score["gender"])/3
+                template_score = (Score["patient"]+Score["age"]+Score["gender"])/(int(Check["patient"])+int(Check["age"])+int(Check["gender"]))
                 Templates.append((template, description, template_score))
 
         elif self.query_data["Topic"] == "drug" and len(self.query_data['Snomed_ID']):
 
             template = get_drug_info(self.query_data['Snomed_ID'][0], Check["administration"])
             description = f'Information about drug {"and its route" if Check["administration"] else ""}  with Snomed_ID : {self.query_data["Snomed_ID"][0]}'
-            template_score = (Score["drug"]+Score["administration"])/2
+            template_score = (Score["drug"]+Score["administration"])/(int(Check["drug"])+int(Check["administration"]))
             Templates.append((template, description, template_score))
 
         elif self.query_data["Topic"] == "condition" and len(self.query_data['Snomed_ID']):
@@ -139,13 +141,13 @@ class ChatBot:
             if Check["patient"] or Check["drug"]:
                 template = get_patient_drug_list(Filters['age']['val'], Filters['age']['comp'], Filters['gender'], Filters['administration'])
                 description = f'Filtered Information about patients and drugs given to them'
-                template_score = (Score["patient"]+Score["drug"])/2
+                template_score = (Score["patient"]+Score["drug"])/(int(Check["patient"])+int(Check["drug"]))
                 Templates.append((template, description, template_score))
             
             if Check["patient"] or Check["condition"]:
                 template = get_patient_condition_list(Filters['age']['val'], Filters['age']['comp'], Filters['gender'])
                 description = f'Filtered Information about patients and conditions had by them'
-                template_score = (Score["patient"]+Score["condition"])/2
+                template_score = (Score["patient"]+Score["condition"])/(int(Check["patient"])+int(Check["condition"]))
                 Templates.append((template, description, template_score))
 
             if Check["patient"]:
