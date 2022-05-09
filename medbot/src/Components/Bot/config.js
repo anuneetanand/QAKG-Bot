@@ -8,7 +8,7 @@ import QueryTemplates from "../Widgets/QueryTemplates.js";
 import GenericQueryFilters from "../Widgets/GenericQueryFilters.js";
 import GenericQueryEntities from "../Widgets/GenericQueryEntities.js";
 import SpecificQueryEntities from "../Widgets/SpecificQueryEntities.js";
-import RestartFromBeginning from "../Widgets/RestartFromBeginning.js";
+import RestartFlow from "../Widgets/RestartFlow.js";
 
 
 const config = {
@@ -69,8 +69,8 @@ const config = {
     },
 
     {
-      widgetName: "RestartFromBeginning",
-      widgetFunc: (props) => <RestartFromBeginning {...props} />,
+      widgetName: "RestartFlow",
+      widgetFunc: (props) => <RestartFlow {...props} />,
       mapStateToProps: ["messages"],
     },
 

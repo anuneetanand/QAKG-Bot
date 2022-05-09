@@ -5,7 +5,7 @@ const USING_BACKEND = true;
 const GenericQueryEntities = (props) => {
   let options = [
     {
-      name: "Disease",
+      name: "Condition",
       id: 1,
     },
     {
@@ -19,7 +19,7 @@ const GenericQueryEntities = (props) => {
   ];
 
   if (USING_BACKEND) {
-    axios.get(`${backendURI}/getGeneralizedQueryEntities`).then((res) => {
+    axios.get(`${backendURI}/getGenericQueryEntities`).then((res) => {
       const entities = res.data["entities"];
       options = [];
       for (var entityID in entities) {

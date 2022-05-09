@@ -59,14 +59,14 @@ def get_drug_list(route = ""):
     }}
     """
 
-def get_disease(snomed_id):
-    var1 = "?disease_name"
+def get_condition(snomed_id):
+    var1 = "?condition_name"
 
     return f"""
     SELECT {var1} WHERE {{
-        ?disease a schema:Condition .
-        ?disease schema:snomed_id "{snomed_id}"^^xsd:integer .
-        ?disease rdfs:label {var1}
+        ?condition a schema:Condition .
+        ?condition schema:snomed_id "{snomed_id}"^^xsd:integer .
+        ?condition rdfs:label {var1}
     }}
     """
 
@@ -107,8 +107,8 @@ def get_patient_drug_list(age = "", age_comp = "", gender = "", route = ""):
     }}
     """
 
-def get_patient_disease_info(patient_id, date = False):
-    var1, var2, var3 = "?disease", "?onSet", "?offSet"
+def get_patient_condition_info(patient_id, date = False):
+    var1, var2, var3 = "?condition", "?onSet", "?offSet"
 
     return f"""
     SELECT {var1} {var2 if date else ""} {var3 if date else ""} WHERE {{
@@ -123,8 +123,8 @@ def get_patient_disease_info(patient_id, date = False):
     }}
     """
 
-def get_patient_disease_list(age = "", age_comp = "", gender = ""):
-    var1, var2, var3, var4 = "?patient_id", "?age", "?gender", "?disease"
+def get_patient_condition_list(age = "", age_comp = "", gender = ""):
+    var1, var2, var3, var4 = "?patient_id", "?age", "?gender", "?condition"
 
     return f"""
     SELECT {var1} {var2} {var3} {var4} WHERE {{

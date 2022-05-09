@@ -1,4 +1,4 @@
-const RestartFromBeginning = (props) => {
+const RestartFlow = (props) => {
   const options = [
     {
       name: "Restart",
@@ -17,4 +17,4 @@ const RestartFromBeginning = (props) => {
   return <div>{optionsMarkup}</div>;
 };
 
-export default RestartFromBeginning;
+export default RestartFlow;

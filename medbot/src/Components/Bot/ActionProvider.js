@@ -25,7 +25,7 @@ class ActionProvider {
 
   handleDefault = () => {
     const message = this.createChatBotMessage("Sorry I didn't understand", {
-      withAvatar: true, widget: "RestartFromBeginning"
+      withAvatar: true, widget: "RestartFlow"
     });
     this.addMessageToBotState(message);
   };
@@ -35,15 +35,16 @@ class ActionProvider {
     if (USING_BACKEND) {
       axios.post(`${backendURI}/sendQueryType`, {
         params: { queryType: 'specific' },
-      });
+      }).then((res) => {
+          const message = this.createChatBotMessage(
+            "Select the entity you want to query about",
+            {
+              widget: "SpecificQueryEntities",
+            }
+          );
+          this.addMessageToBotState(message);
+       })
     }
-    const message = this.createChatBotMessage(
-      "Select the entity you want to query about",
-      {
-        widget: "SpecificQueryEntities",
-      }
-    );
-    this.addMessageToBotState(message);
   };
 
   handleGenericQuery = () => {
@@ -51,24 +52,22 @@ class ActionProvider {
     if (USING_BACKEND) {
       axios.post(`${backendURI}/sendQueryType`, {
         params: { queryType: 'generic' },
-      });
+      }).then((res) => {
+        const message = this.createChatBotMessage("Enter your generic query");
+        this.addMessageToBotState(message);
+      })
     }
-    const message = this.createChatBotMessage("Enter your generic query", {
-      widget: "RestartFromBeginning",
-    });
-    this.addMessageToBotState(message);
   };
 
   handleSpecificQueryEntity = (entityName) => {
     if (USING_BACKEND) {
       axios.post(`${backendURI}/sendQueryTopic`, {
         params: { topic: entityName },
-      });
+      }).then((res) => {
+          const message = this.createChatBotMessage("Enter your specific query");
+        this.addMessageToBotState(message);
+    })
     }
-    const message = this.createChatBotMessage("Enter your specific query", {
-      widget: "RestartFromBeginning",
-    });
-    this.addMessageToBotState(message);
   };
 
   sendAnswerTypeMessage = () => {
@@ -85,12 +84,13 @@ class ActionProvider {
     if (USING_BACKEND) {
       axios.post(`${backendURI}/sendQueryAnswerType`, {
         params: { answerType: answerType },
+      }).then((res) => {
+          if (queryType === 'specific') {
+          this.handleSpecificQueryRequests();
+          } else if (queryType === 'generic') {
+          this.handleGenericQueryRequests();
+          }
       });
-    }
-    if (queryType === 'specific') {
-      this.handleSpecificQueryRequests();
-    } else if (queryType === 'generic') {
-      this.handleGenericQueryRequests();
     }
   };
 
@@ -105,25 +105,23 @@ class ActionProvider {
         .then((res) => {
           flag = res.data["flag"];
           needID = res.data["id"];
+          if (flag) {
+            if (needID.length > 0) {
+              const message = this.createChatBotMessage("Enter the ID for " + needID);
+              this.addMessageToBotState(message);
+            } else {
+              this.handleQueryTemplates();
+            }
+          } else {
+            const message = this.createChatBotMessage(
+              "Not a valid query, please start again"
+            );
+            this.addMessageToBotState(message);
+            this.handleRestartFlow();
+          }
         });
-    }
-    if (flag) {
-      if (needID.length > 0) {
-        const message = this.createChatBotMessage("Enter the ID for" + needID, {
-          widget: "RestartFromBeginning",
-        });
-        this.addMessageToBotState(message);
-      } else {
-        this.handleQueryTemplates();
       }
-    } else {
-      const message = this.createChatBotMessage(
-        "Not a valid query, please start again"
-      );
-      this.addMessageToBotState(message);
-      this.handleRestartFlow();
     }
-  }
 
   handleGenericQueryRequests = () => {
     let flag = true;
@@ -136,25 +134,25 @@ class ActionProvider {
         .then((res) => {
           flag = res.data["flag"];
           filters = res.data["filters"];
+          if (flag) {
+            if (filters.length > 0) {
+              const message = this.createChatBotMessage(filters, {
+                widget: "RestartFlow",
+              });
+              this.addMessageToBotState(message);
+            } else {
+              this.handleQueryTemplatess();
+            }
+          } else {
+            const message = this.createChatBotMessage(
+              "Not a valid query, please start again"
+            );
+            this.addMessageToBotState(message);
+            this.handleRestartFlow();
+          }
         });
-    if (flag) {
-      if (filters.length > 0) {
-        const message = this.createChatBotMessage(filters, {
-          widget: "RestartFromBeginning",
-        });
-        this.addMessageToBotState(message);
-      } else {
-        this.handleQueryTemplatess();
       }
-    } else {
-      const message = this.createChatBotMessage(
-        "Not a valid query, please start again"
-      );
-      this.addMessageToBotState(message);
-      this.handleRestartFlow();
-    }
-    }
-  }
+   }
 
   getQueryTemplates = () => {
     return queryTemplates;
@@ -186,12 +184,18 @@ class ActionProvider {
     if (USING_BACKEND) {
       axios.post(`${backendURI}/sendTemplate`, {
         params: { id: query.id },
+      }).then(() => {
+        if(query.name === 'None') {
+          this.handleRestartFlow();
+        }
+        else {
+          const message = this.createChatBotMessage("Is your query confirmed?", {
+            widget: "Confirmation",
+          });
+          this.addMessageToBotState(message);
+        }
       });
     }
-    const message = this.createChatBotMessage("Is your query confirmed?", {
-      widget: "Confirmation",
-    });
-    this.addMessageToBotState(message);
   };
 
   handleUserConfirmation = (confirmation) => {
@@ -199,31 +203,36 @@ class ActionProvider {
       axios.post(`${backendURI}/sendConfirmation`, {
         params: { confirmation: confirmation },
       }).then(() => {
-      if (confirmation === "Yes") {
-        let queryResults = [];
-        if (USING_BACKEND) {
-          axios.get(`${backendURI}/getQueryResults`).then((res) => {
-            console.log(res);
-            queryResults = res.data["results"]["data"];
-          }).then(() => {
-          queryResults.forEach((queryResult) => {
-            const message = this.createChatBotMessage(queryResult);
+        if (confirmation === "Yes") {
+          let queryResults = [];
+          if (USING_BACKEND) {
+            axios.get(`${backendURI}/getQueryResults`).then((res) => {
+              queryResults = res.data["results"]["data"];
+              queryResults.forEach((queryResult) => {
+                const message = this.createChatBotMessage(queryResult);
+                this.addMessageToBotState(message);
+              });
+              const message = this.createChatBotMessage(
+              "Please Restart for new query", {widget: "RestartFlow",});
+              this.addMessageToBotState(message);
+            });
+          }
+        } else {
+            const message1 = this.createChatBotMessage("Please try again later");
+            this.addMessageToBotState(message1);
+            const message = this.createChatBotMessage(
+            "Please Restart for new query", {widget: "RestartFlow",});
             this.addMessageToBotState(message);
-          });});
-        }} else {
-          const message = this.createChatBotMessage(
-            "We apologize for the inconvenience :("
-          );
-          this.addMessageToBotState(message);
-        }});
+        }
+      })
     }
   };
 
-  handleGeneralizedQueryEntities = () => {
+  handleGenericQueryEntities = () => {
     const message = this.createChatBotMessage(
       "Select all entities which are a part of your query",
       {
-        widget: "EntitiesGeneralizedQueries",
+        widget: "EntitiesGenericQueries",
       }
     );
     this.addMessageToBotState(message);
@@ -242,7 +251,7 @@ class ActionProvider {
       if (USING_BACKEND) {
         axios
           .get(`${backendURI}/getQueryRequests`, {
-            params: { queryMode: "generalized" },
+            params: { queryMode: "Generic" },
           })
           .then((res) => {
             filters = res.data["filters"];
@@ -269,7 +278,7 @@ class ActionProvider {
         const message = this.createChatBotMessage(
           "Select filter(s) to apply to your query",
           {
-            widget: "FiltersGeneralizedQuery",
+            widget: "FiltersGenericQuery",
           }
         );
         this.addMessageToBotState(message);
@@ -293,7 +302,7 @@ class ActionProvider {
       const message = this.createChatBotMessage(
         "Select one of the following queries",
         {
-          widget: "SampleQueriesGeneralized",
+          widget: "SampleQueriesGeneric",
         }
       );
       this.addMessageToBotState(message);

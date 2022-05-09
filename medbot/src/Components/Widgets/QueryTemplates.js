@@ -6,9 +6,7 @@ const QueryTemplates = (props) => {
         className="option-item"
         key={option.id}
         onClick={() => {
-          if (option.name === "None")
-            props.actionProvider.handleRestartFlow();
-          else props.actionProvider.handleUserSelectedQuery(option);
+          props.actionProvider.handleUserSelectedQuery(option);
         }}
       >
         {option.name}

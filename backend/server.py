@@ -39,8 +39,8 @@ def sendQueryAnswerType():
 		MedBot.setAnswerType(data['answerType'])
 		return Response(status=200)
 
-@app.route('/getGeneralizedQueryEntities', methods = ['GET'])
-def getGeneralizedQueryEntities():
+@app.route('/getGenericQueryEntities', methods = ['GET'])
+def getGenericQueryEntities():
 	if(request.method == 'GET'):
 		identified_entities = MedBot.getIdentifiedEntities()
 		other_entities = MedBot.getOtherEntities()
@@ -62,12 +62,15 @@ def getQueryRequests():
 	if(request.method == 'GET'):
 		data = request.args.to_dict()
 		query_mode = data['queryMode']
-		if query_mode == "generalized":
+		if query_mode == "generic":
 			applied_filters = MedBot.findAppliedFilters()
 			return jsonify({'flag': True, 'filters': applied_filters})
 		else:
 			checkID = MedBot.validateID()
-			return jsonify({'flag': True, 'id': checkID})
+			if checkID:
+				return jsonify({'flag': True, 'id': ""})
+			else:
+				return jsonify({'flag': True, 'id': MedBot.getQueryData()['Topic']})
 
 @app.route('/sendPrimaryEntityID', methods = ['POST'])
 def sendPrimaryEntityID():
@@ -104,11 +107,11 @@ def sendTemplate():
 	if(request.method == 'POST'):
 		data = request.get_json()['params']
 		template_id = int(data['id'])
-		# ToDo: Check if template_id is valid
 		if template_id > len(MedBot.getTemplates()):
 			userFeedback['negative'] += 1
-		best_template = MedBot.getTemplates()[template_id][0]
-		MedBot.prepareQuery(best_template)
+		else:
+			best_template = MedBot.getTemplates()[template_id][0]
+			MedBot.prepareQuery(best_template)
 		return Response(status=200)
 
 @app.route('/sendConfirmation', methods = ['POST'])
@@ -120,7 +123,6 @@ def sendConfirmation():
 			MedBot.executeQuery()
 		else:
 			userFeedback['negative'] += 1
-			MedBot.setQuery(None)
 		return Response(status=200)
 
 @app.route('/getQueryResults', methods = ['GET'])
@@ -132,6 +134,8 @@ def getQueryResults():
 @app.route('/restart', methods = ['POST'])
 def restart():
 	if(request.method == 'POST'):
+		with open('userFeedback.txt','w') as file:
+			file.write(str(userFeedback))
 		MedBot.restart()
 		return Response(status=200)
 

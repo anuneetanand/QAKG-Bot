@@ -109,8 +109,8 @@ class ChatBot:
                 Templates.append((template, description, template_score))
 
             if Check["condition"]:
-                template = get_patient_disease_info(self.query_data['Patient_ID'][0], Check["date"])
-                description = f'Information about diseases {"and their duration" if Check["date"] else ""} that affected patient with ID {self.query_data["Patient_ID"][0]}'
+                template = get_patient_condition_info(self.query_data['Patient_ID'][0], Check["date"])
+                description = f'Information about conditions {"and their duration" if Check["date"] else ""} that affected patient with ID {self.query_data["Patient_ID"][0]}'
                 template_score = (Score["patient"]+Score["date"])/2
                 Templates.append((template, description, template_score))
 
@@ -129,8 +129,8 @@ class ChatBot:
 
         elif self.query_data["Topic"] == "condition" and len(self.query_data['Snomed_ID']):
 
-            template = get_disease(self.query_data['Snomed_ID'][0])
-            description = f'Information about disease with Snomed_ID : {self.query_data["Snomed_ID"][0]}'
+            template = get_condition(self.query_data['Snomed_ID'][0])
+            description = f'Information about condition with Snomed_ID : {self.query_data["Snomed_ID"][0]}'
             template_score = Score["condition"]
             Templates.append((template, description, template_score))
 
@@ -143,8 +143,8 @@ class ChatBot:
                 Templates.append((template, description, template_score))
             
             if Check["patient"] or Check["condition"]:
-                template = get_patient_disease_list(Filters['age']['val'], Filters['age']['comp'], Filters['gender'])
-                description = f'Filtered Information about patients and diseases had by them'
+                template = get_patient_condition_list(Filters['age']['val'], Filters['age']['comp'], Filters['gender'])
+                description = f'Filtered Information about patients and conditions had by them'
                 template_score = (Score["patient"]+Score["condition"])/2
                 Templates.append((template, description, template_score))
 
@@ -193,22 +193,25 @@ class ChatBot:
             for result in response["results"]['bindings']:
                 res = []
                 for attribute in result:
-                    res.append(result[attribute]['value'].split('/')[-1])
+                    text = attribute.capitalize() + " : " + result[attribute]['value'].split('/')[-1]
+                    res.append(text)
                 record["data"].append(" ".join(res))
             self.response = record
+            if len(response["results"]['bindings']) == 0:
+                self.response = self.response = { 'headers' : [], 'data': ['No results found'] }
 
         elif self.query_data['Answer_Type'] == "Count":
             sparql.setReturnFormat(JSON)
             response = sparql.query().convert()
             count = len(sparql.query().convert()["results"]['bindings'])
-            self.response = { 'headers' : [], 'data': {0:f'{count} Record(s) matched your query'}}
+            self.response = { 'headers' : [], 'data': [f'{count} Record(s) matched your query']}
 
         elif self.query_data['Answer_Type'] == "Boolean":
             sparql.setReturnFormat(JSON)
             response = sparql.query().convert()
             flag = len(sparql.query().convert()["results"]['bindings']) > 0
-            self.response = { 'headers' : [], 'data': {0:f'Yes' if flag else f'No'}}
-
+            self.response = { 'headers' : [], 'data': [f'Yes' if flag else f'No']}
+            
         else:
             self.response = "null"
 

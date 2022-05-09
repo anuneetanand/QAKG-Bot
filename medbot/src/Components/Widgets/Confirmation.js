@@ -8,10 +8,6 @@ const Confirmation = (props) => {
       name: "No",
       id: 2,
     },
-    {
-      name: "Restart",
-      id: 1000000,
-    },
   ];
 
   const optionsMarkup = options.map((option) => {
@@ -20,9 +16,6 @@ const Confirmation = (props) => {
         className="option-item"
         key={option.id}
         onClick={() => {
-          if (option.name === "Restart")
-            props.actionProvider.handleRestartFlow();
-          else
             props.actionProvider.handleUserConfirmation(
               option.name
             );

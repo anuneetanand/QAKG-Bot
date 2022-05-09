@@ -33,10 +33,8 @@ class MessageParser {
       if (USING_BACKEND) {
         axios.post(`${backendURI}/sendPrimaryEntityID`, {
           params: { id: message },
-        });
-      }
-      return this.actionProvider.handleQueryTemplates();
-    } else if (
+        }).then(res => {return this.actionProvider.handleQueryTemplates();});
+    }} else if (
       lastMessage.includes("Enter") &&
       lastMessage.includes("value:")
     ) {
