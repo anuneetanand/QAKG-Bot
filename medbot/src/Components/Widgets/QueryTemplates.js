@@ -1,18 +1,12 @@
 const QueryTemplates = (props) => {
-  let options = [
-    {
-      name: "Restart",
-      id: 1000000,
-    }
-  ]
-  options = props.actionProvider.getQueryTemplates();
+  const options = props.actionProvider.getQueryTemplates();
   const optionsMarkup = options.map((option) => {
     return (
       <div
         className="option-item"
         key={option.id}
         onClick={() => {
-          if (option.name === "Restart")
+          if (option.name === "None")
             props.actionProvider.handleRestartFlow();
           else props.actionProvider.handleUserSelectedQuery(option);
         }}
@@ -21,7 +15,6 @@ const QueryTemplates = (props) => {
       </div>
     );
   });
-  console.log(options);
   return <div>{optionsMarkup}</div>;
 };
 

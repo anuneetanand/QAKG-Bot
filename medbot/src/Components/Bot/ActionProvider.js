@@ -161,12 +161,15 @@ class ActionProvider {
   }
 
   handleQueryTemplates = () => {
+    queryTemplates = [];
+    
     if (USING_BACKEND) {
       axios.get(`${backendURI}/getPossibleTemplates`).then((res) => {
         const templates = res.data["queries"];
         for (var templateID in templates) {
           queryTemplates.push({ name: templates[templateID], id: parseInt(templateID) });
         }
+        queryTemplates.push({ name: 'None', id:1000000});
       }).then(() => {
         const message = this.createChatBotMessage(
         "Select the option which best describes your query",
@@ -180,7 +183,6 @@ class ActionProvider {
   }
 
   handleUserSelectedQuery = (query) => {
-
     if (USING_BACKEND) {
       axios.post(`${backendURI}/sendTemplate`, {
         params: { id: query.id },
@@ -196,24 +198,24 @@ class ActionProvider {
     if (USING_BACKEND) {
       axios.post(`${backendURI}/sendConfirmation`, {
         params: { confirmation: confirmation },
-      });
-    }
-    if (confirmation === "Yes") {
-      let queryResults = [];
-      if (USING_BACKEND) {
-        axios.get(`${backendURI}/getQueryResults`).then((res) => {
-          queryResults = res.data["results"];
-        });
-      }
-      queryResults.forEach((queryResult) => {
-        const message = this.createChatBotMessage(queryResult);
-        this.addMessageToBotState(message);
-      });
-    } else {
-      const message = this.createChatBotMessage(
-        "We apologize for the inconvenience :("
-      );
-      this.addMessageToBotState(message);
+      }).then(() => {
+      if (confirmation === "Yes") {
+        let queryResults = [];
+        if (USING_BACKEND) {
+          axios.get(`${backendURI}/getQueryResults`).then((res) => {
+            console.log(res);
+            queryResults = res.data["results"]["data"];
+          }).then(() => {
+          queryResults.forEach((queryResult) => {
+            const message = this.createChatBotMessage(queryResult);
+            this.addMessageToBotState(message);
+          });});
+        }} else {
+          const message = this.createChatBotMessage(
+            "We apologize for the inconvenience :("
+          );
+          this.addMessageToBotState(message);
+        }});
     }
   };
 

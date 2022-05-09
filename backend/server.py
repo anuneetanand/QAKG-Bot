@@ -104,9 +104,10 @@ def getPossibleTemplates():
 def sendTemplate():
 	if(request.method == 'POST'):
 		data = request.get_json()['params']
-		template_id = data['id']
-		best_template = MedBot.getTemplates()[template_id]
-		MedBot.setTemplate(best_template)
+		template_id = int(data['id'])
+		best_template = MedBot.getTemplates()[template_id][0]
+		MedBot.prepareQuery(best_template)
+		print(template_id)
 		return Response(status=200)
 
 @app.route('/sendConfirmation', methods = ['POST'])
@@ -123,8 +124,10 @@ def sendConfirmation():
 
 @app.route('/getQueryResults', methods = ['GET'])
 def getQueryResults():
+	print("Hellooooo")
 	if(request.method == 'GET'):
-		return jsonify({'results': MedBot.getResponse()})
+		query_results = MedBot.getResponse()
+		return jsonify({'results': query_results })
 
 @app.route('/restart', methods = ['POST'])
 def restart():

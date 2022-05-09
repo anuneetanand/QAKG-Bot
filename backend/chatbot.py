@@ -184,6 +184,7 @@ class ChatBot:
         elif self.query_data['Answer_Type'] == "Record":
             sparql.setReturnFormat(JSON)
             response = sparql.query().convert()
+            print(response)
             record = {}
             record['headers'] = response['head']['vars']
             record['data'] = []
