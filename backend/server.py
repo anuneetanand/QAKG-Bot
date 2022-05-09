@@ -11,6 +11,13 @@ userFeedback = {"positive": 0, "negative": 0}
 app = Flask(__name__)
 cors = CORS(app, headers=["Access-Control-Allow-Origin", "Content-Type", "Authorization"])
 
+@app.route('/sendQueryType', methods=['POST'])
+def sendQueryType():
+	if (request.method == 'POST'):
+		data = request.get_json()['params']
+		MedBot.setQueryType(data['queryType'])
+		return Response(status=200)
+
 @app.route('/sendQueryTopic', methods = ['POST'])
 def sendQueryTopic():
 	if(request.method == 'POST'):
@@ -32,8 +39,8 @@ def sendQueryAnswerType():
 		MedBot.setAnswerType(data['answerType'])
 		return Response(status=200)
 
-@app.route('/getEntitiesGeneralizedQuery', methods = ['GET'])
-def getEntitiesGeneralizedQuery():
+@app.route('/getGeneralizedQueryEntities', methods = ['GET'])
+def getGeneralizedQueryEntities():
 	if(request.method == 'GET'):
 		identified_entities = MedBot.getIdentifiedEntities()
 		other_entities = MedBot.getOtherEntities()
@@ -86,14 +93,9 @@ def sendFilters():
 
 @app.route('/getPossibleTemplates', methods = ['GET'])
 def getPossibleTemplates():
-	print("lol")
-	print("\n")
-	print(MedBot.getQueryData())
-	print("\n")
 	if(request.method == 'GET'):
 		MedBot.findTemplates()
 		templates = MedBot.getTemplates()
-		print(templates)
 		template_desc = {i:templates[i][1] for i in range(len(templates))}
 		print(template_desc)
 		return jsonify({'queries': template_desc})

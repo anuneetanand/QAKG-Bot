@@ -1,9 +1,8 @@
 import "axios";
 import axios from "axios";
 
-const backendURI = "http://127.0.0.1:5000";
 const USING_BACKEND = true;
-
+const backendURI = "http://127.0.0.1:5000";
 class MessageParser {
   constructor(actionProvider, state) {
     this.actionProvider = actionProvider;
@@ -11,32 +10,32 @@ class MessageParser {
   }
 
   parse = (message) => {
-    const text = message.toLowerCase();
     const messageStack = this.state.messages.reverse();
     const lastMessage = messageStack[0].message;
-    console.log(messageStack);
-    if (lastMessage === "Enter specific query") {
+
+    if (lastMessage === "Enter your specific query") {
       if (USING_BACKEND) {
         axios.post(`${backendURI}/sendQuery`, {
           params: { query: message },
         });
       }
-      return this.actionProvider.sendAnswerTypeSpecificQueryMessage();
-    } else if (lastMessage === "Enter generic query") {
-      console.log("Entered");
+      return this.actionProvider.sendAnswerTypeMessage();
+    } 
+    else if (lastMessage === "Enter your generic query") {
       if (USING_BACKEND) {
         axios.post(`${backendURI}/sendQuery`, {
           params: { query: message },
         });
       }
-      return this.actionProvider.sendAnswerTypeGeneralizedQueryMessage();
-    } else if (lastMessage.includes("Enter") && lastMessage.includes("id")) {
+      return this.actionProvider.sendAnswerTypeMessage();
+    } 
+    else if (lastMessage.includes("Enter the ID")) {
       if (USING_BACKEND) {
         axios.post(`${backendURI}/sendPrimaryEntityID`, {
           params: { id: message },
         });
       }
-      return this.actionProvider.handleSampleQueriesSpecific();
+      return this.actionProvider.handleQueryTemplates();
     } else if (
       lastMessage.includes("Enter") &&
       lastMessage.includes("value:")

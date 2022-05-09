@@ -1,4 +1,4 @@
-const AnswerTypeSpecificQuery = (props) => {
+const AnswerType = (props) => {
   const options = [
     {
       name: "Record",
@@ -26,7 +26,8 @@ const AnswerTypeSpecificQuery = (props) => {
         onClick={() => {
           if (option.name === "Restart")
             props.actionProvider.handleRestartFlow();
-          else props.actionProvider.handleAnswerTypeSpecificQuery(option.name);
+          else
+            props.actionProvider.handleAnswerTypeQuery(option.name);
         }}
       >
         {option.name}
@@ -36,4 +37,4 @@ const AnswerTypeSpecificQuery = (props) => {
   return <div>{optionsMarkup}</div>;
 };
 
-export default AnswerTypeSpecificQuery;
+export default AnswerType;

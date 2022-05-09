@@ -1,4 +1,4 @@
-const ConfirmationSpecificQuery = (props) => {
+const Confirmation = (props) => {
   const options = [
     {
       name: "Yes",
@@ -23,7 +23,7 @@ const ConfirmationSpecificQuery = (props) => {
           if (option.name === "Restart")
             props.actionProvider.handleRestartFlow();
           else
-            props.actionProvider.handleUserConfirmationSpecificQuery(
+            props.actionProvider.handleUserConfirmation(
               option.name
             );
         }}
@@ -35,4 +35,4 @@ const ConfirmationSpecificQuery = (props) => {
   return <div>{optionsMarkup}</div>;
 };
 
-export default ConfirmationSpecificQuery;
+export default Confirmation;

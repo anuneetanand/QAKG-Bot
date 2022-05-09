@@ -2,27 +2,33 @@ import axios from "axios";
 
 const backendURI = "http://127.0.0.1:5000";
 const USING_BACKEND = true;
-const SampleQueriesGeneralized = (props) => {
+const GenericQueryEntities = (props) => {
   let options = [
     {
-      name: "What is the age of patient 1?",
+      name: "Disease",
       id: 1,
     },
     {
-      name: "What drugs were given to patient 2?",
+      name: "Drug",
       id: 2,
+    },
+    {
+      name: "Person",
+      id: 3,
     },
   ];
 
   if (USING_BACKEND) {
-    axios.get(`${backendURI}/getPossibleGeneralizedQueries`).then((res) => {
-      const queries = res.data["queries"];
+    axios.get(`${backendURI}/getGeneralizedQueryEntities`).then((res) => {
+      const entities = res.data["entities"];
       options = [];
-      for (var queryID in queries) {
-        options.push({ name: queries[queryID], id: queryID });
+      for (var entityID in entities) {
+        options.push({ name: entities[entityID], id: entityID });
       }
     });
   }
+
+  options.push({ name: "Stop", id: 0 });
   options.push({
     name: "Restart",
     id: 1000000,
@@ -36,7 +42,7 @@ const SampleQueriesGeneralized = (props) => {
         onClick={() => {
           if (option.name === "Restart")
             props.actionProvider.handleRestartFlow();
-          else props.actionProvider.handleUserSelctedGeneralizedQuery(option);
+          else props.actionProvider.handleUserSelectedEntity(option);
         }}
       >
         {option.name}
@@ -46,4 +52,4 @@ const SampleQueriesGeneralized = (props) => {
   return <div>{optionsMarkup}</div>;
 };
 
-export default SampleQueriesGeneralized;
+export default GenericQueryEntities;

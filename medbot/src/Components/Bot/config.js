@@ -1,24 +1,23 @@
-import { createChatBotMessage } from "react-chatbot-kit";
-import Menu from "../Widgets/Menu.js";
 import Avatar from "../Util/Avatar.js";
-import SampleQueriesSpecific from "../Widgets/SampleQueriesSpecific.js";
-import ConfirmationSpecificQuery from "../Widgets/ConfirmationSpecificQuery.js";
-import EntitiesGeneralizedQueries from "../Widgets/EntitiesGeneralizedQueries.js";
-import SampleQueriesGeneralized from "../Widgets/SampleQueriesGeneralized.js";
-import FiltersGeneralizedQuery from "../Widgets/FiltersGeneralizedQuery.js";
-import ConfirmationGeneralizedQuery from "../Widgets/ConfirmationGeneralizedQuery.js";
-import RestartFromBeginning from "../Widgets/RestartFromBeginning.js";
+import { createChatBotMessage } from "react-chatbot-kit";
+
+import Menu from "../Widgets/Menu.js";
+import AnswerType from "../Widgets/AnswerType.js";
+import Confirmation from "../Widgets/Confirmation.js";
+import QueryTemplates from "../Widgets/QueryTemplates.js";
+import GenericQueryFilters from "../Widgets/GenericQueryFilters.js";
+import GenericQueryEntities from "../Widgets/GenericQueryEntities.js";
 import SpecificQueryEntities from "../Widgets/SpecificQueryEntities.js";
-import AnswerTypeSpecificQuery from "../Widgets/AnswerTypeSpecificQuery.js";
-import AnswerTypeGeneralizedQuery from "../Widgets/AnswerTypeGeneralizedQuery.js";
+import RestartFromBeginning from "../Widgets/RestartFromBeginning.js";
+
 
 const config = {
   botName: "MedBot",
   initialMessages: [
     createChatBotMessage(
-      "Hi! I'm MedBot. I can help you in querying data from Electronic Health Records."
+      "Hi! I'm MedBot. I can help you in querying data from the electronic health records"
     ),
-    createChatBotMessage("Please select an option.", {
+    createChatBotMessage("Please choose the query type", {
       widget: "Menu",
     }),
   ],
@@ -40,38 +39,38 @@ const config = {
     },
 
     {
-      widgetName: "SampleQueriesSpecific",
-      widgetFunc: (props) => <SampleQueriesSpecific {...props} />,
+      widgetName: "AnswerType",
+      widgetFunc: (props) => <AnswerType {...props} />,
       mapStateToProps: ["messages"],
     },
 
     {
-      widgetName: "ConfirmationSpecificQuery",
-      widgetFunc: (props) => <ConfirmationSpecificQuery {...props} />,
+      widgetName: "Confirmation",
+      widgetFunc: (props) => <Confirmation {...props} />,
       mapStateToProps: ["messages"],
     },
 
     {
-      widgetName: "EntitiesGeneralizedQueries",
-      widgetFunc: (props) => <EntitiesGeneralizedQueries {...props} />,
+      widgetName: "QueryTemplates",
+      widgetFunc: (props) => <QueryTemplates {...props} />,
       mapStateToProps: ["messages"],
     },
 
     {
-      widgetName: "SampleQueriesGeneralized",
-      widgetFunc: (props) => <SampleQueriesGeneralized {...props} />,
+      widgetName: "GenericQueryFilters ",
+      widgetFunc: (props) => <GenericQueryFilters {...props} />,
       mapStateToProps: ["messages"],
     },
 
     {
-      widgetName: "FiltersGeneralizedQuery",
-      widgetFunc: (props) => <FiltersGeneralizedQuery {...props} />,
+      widgetName: "GenericQueryEntities ",
+      widgetFunc: (props) => <GenericQueryEntities  {...props} />,
       mapStateToProps: ["messages"],
     },
 
     {
-      widgetName: "ConfirmationGeneralizedQuery",
-      widgetFunc: (props) => <ConfirmationGeneralizedQuery {...props} />,
+      widgetName: "RestartFromBeginning",
+      widgetFunc: (props) => <RestartFromBeginning {...props} />,
       mapStateToProps: ["messages"],
     },
 
@@ -81,23 +80,7 @@ const config = {
       mapStateToProps: ["messages"],
     },
 
-    {
-      widgetName: "AnswerTypeSpecificQuery",
-      widgetFunc: (props) => <AnswerTypeSpecificQuery {...props} />,
-      mapStateToProps: ["messages"],
-    },
 
-    {
-      widgetName: "AnswerTypeGeneralizedQuery",
-      widgetFunc: (props) => <AnswerTypeGeneralizedQuery {...props} />,
-      mapStateToProps: ["messages"],
-    },
-
-    {
-      widgetName: "RestartFromBeginning",
-      widgetFunc: (props) => <RestartFromBeginning {...props} />,
-      mapStateToProps: ["messages"],
-    },
   ],
 };
 

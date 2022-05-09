@@ -2,28 +2,24 @@ import axios from "axios";
 
 const backendURI = "http://127.0.0.1:5000";
 const USING_BACKEND = true;
-const EntitiesGeneralizedQueries = (props) => {
+const GenericQueryFilters = (props) => {
   let options = [
     {
-      name: "Disease",
+      name: "Age",
       id: 1,
     },
     {
-      name: "Drug",
+      name: "Gender",
       id: 2,
-    },
-    {
-      name: "Person",
-      id: 3,
     },
   ];
 
   if (USING_BACKEND) {
-    axios.get(`${backendURI}/getEntitiesGeneralizedQuery`).then((res) => {
-      const entities = res.data["entities"];
+    axios.get(`${backendURI}/getPossibleFilters`).then((res) => {
+      const filters = res.data["filters"];
       options = [];
-      for (var entityID in entities) {
-        options.push({ name: entities[entityID], id: entityID });
+      for (var filterID in filters) {
+        options.push({ name: filters[filterID], id: filterID });
       }
     });
   }
@@ -42,7 +38,7 @@ const EntitiesGeneralizedQueries = (props) => {
         onClick={() => {
           if (option.name === "Restart")
             props.actionProvider.handleRestartFlow();
-          else props.actionProvider.handleUserSelectedEntity(option);
+          else props.actionProvider.handleUserSelectedFilter(option);
         }}
       >
         {option.name}
@@ -52,4 +48,4 @@ const EntitiesGeneralizedQueries = (props) => {
   return <div>{optionsMarkup}</div>;
 };
 
-export default EntitiesGeneralizedQueries;
+export default GenericQueryFilters;

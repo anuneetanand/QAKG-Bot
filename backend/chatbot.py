@@ -8,6 +8,7 @@ class ChatBot:
         self.sparql_endpoint = sparql_endpoint
         self.threshold = threshold
         self.user_query = ""
+        self.query_type = ""
         self.query_data = {}
         self.templates = []
         self.sparql_query = ""
@@ -20,6 +21,9 @@ class ChatBot:
         self.templates = []
         self.sparql_query = ""
         self.response = ""
+
+    def setQueryType(self, query_type):
+        self.query_type = query_type
 
     def setQuery(self, user_query):
         self.user_query = user_query
