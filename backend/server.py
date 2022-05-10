@@ -1,16 +1,16 @@
-from tabnanny import verbose
 from flask import Flask, jsonify, request, Response
 from flask_cors import CORS
 from chatbot import ChatBot
 from datetime import datetime
 
-sparqlEndpoint = "http://Anuneets-MacBook-Air.local:7200/repositories/IFHP"
-confidence_threshold = 0.6
 verbose = True
-MedBot = ChatBot(sparql_endpoint = sparqlEndpoint, threshold = confidence_threshold, verbose=verbose)
+confidence = 0.5
+sparqlEndpoint = "http://Anuneets-MacBook-Air.local:7200/repositories/IFHP"
+MedBot = ChatBot(sparql_endpoint = sparqlEndpoint, threshold = confidence, verbose = verbose)
 
 with open("userFeedback.txt", "r") as f:
 	userFeedback = eval(f.read())
+
 app = Flask(__name__)
 cors = CORS(app, headers=["Access-Control-Allow-Origin", "Content-Type", "Authorization"])
 
@@ -41,13 +41,6 @@ def sendQueryAnswerType():
 		data = request.get_json()['params']
 		MedBot.setAnswerType(data['answerType'])
 		return Response(status=200)
-
-@app.route('/getGenericQueryEntities', methods = ['GET'])
-def getGenericQueryEntities():
-	if(request.method == 'GET'):
-		identified_entities = MedBot.getIdentifiedEntities()
-		other_entities = MedBot.getOtherEntities()
-		return jsonify({"identified_entities": identified_entities, "other_entities": other_entities})
 
 @app.route('/sendSelectedEntities', methods = ['POST'])
 def sendSelectedEntities():
@@ -138,20 +131,18 @@ def restart():
 		return Response(status=200)
 
 def log():
-	print("Hello World")
 	Data = MedBot.getQueryData()
 	with open('logs.txt','a') as file:
 		file.write("-"*100+"\n")
-		file.write("Timestamp :"+str(datetime.now())+"\n")
-		file.write("User Query :"+str(MedBot.user_query)+"\n")
-		file.write("User Query Type :"+str(MedBot.query_type)+"\n")
-		file.write("User Query Topic :"+str(Data['Topic'])+"\n")
-		file.write("User Query Answer Type :"+str(Data['Answer_Type'])+"\n")
-		file.write("User Query Entities :"+str(Data['Entity_Scores'])+"\n")
-		file.write("User Query Filters :"+str(Data['Filters'])+"\n")
-		file.write("SPARQL Query :"+str(MedBot.sparql_query)+"\n")
+		file.write("Timestamp:"+str(datetime.now())+"\n")
+		file.write("User Query:"+str(MedBot.user_query)+"\n")
+		file.write("Question Type:"+str(MedBot.query_type)+"\n")
+		file.write("Topic:"+str(Data['Topic'])+"\n")
+		file.write("Answer Type:"+str(Data['Answer_Type'])+"\n")
+		file.write("Query Entities:"+str(Data['Entity_Scores'])+"\n")
+		file.write("Query Filters:"+str(Data['Filters'])+"\n")
+		file.write("SPARQL Query:\n"+str(MedBot.sparql_query)+"\n")
 		file.write("-"*100+"\n")
-
 
 if __name__ == '__main__':
 	app.run(debug = True)

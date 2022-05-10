@@ -69,7 +69,7 @@ def get_condition(snomed_id):
     """
 
 def get_patient_drug_info(patient_id, dosage = False, route = False, date = False):
-    var1, var2, var3, var4, var5, var6 = "?drug_name", "?dosageAmount", "?dosageUnit" , "?route", "?start", "?end"
+    var1, var2, var3, var4, var5, var6 = "?drug_name", "?dosage_amount", "?dosage_unit" , "?route", "?start", "?end"
 
     return f"""
     SELECT DISTINCT {var1} {var2 if dosage else ""} {var3 if dosage else ""} {var4 if route else ""} {var5 if date else ""} {var6 if date else ""} WHERE {{
@@ -77,8 +77,8 @@ def get_patient_drug_info(patient_id, dosage = False, route = False, date = Fals
         ?person schema:hasPatientID "{patient_id}"^^xsd:str .
         ?person schema:drug_administered ?indDrug .
         ?indDrug schema:drugType ?drugID .
-        {"?indDrug schema:patientDosage ?dosageAmount ." if dosage else ""}
-        {"?indDrug schema:doseUnit ?dosageUnit ." if dosage else ""}
+        {"?indDrug schema:patientDosage ?dosage_amount ." if dosage else ""}
+        {"?indDrug schema:doseUnit ?dosage_unit ." if dosage else ""}
         {"?indDrug schema:routeOfAdministration ?route ." if route else ""}
         {"?indDrug schema:drug_adm_start ?start ." if date else ""}
         {"?indDrug schema:drug_adm_end ?end ." if date else ""}
@@ -87,7 +87,7 @@ def get_patient_drug_info(patient_id, dosage = False, route = False, date = Fals
     """
 
 def get_patient_drug_list(age = "", age_comp = "", gender = "", route = ""):
-    var1, var2, var3, var4, var5, var6, var7 = "?patient_id", "?age", "?gender", "?drug_name", "?dosageAmount", "?dosageUnit", "?route"
+    var1, var2, var3, var4, var5, var6, var7 = "?patient_id", "?age", "?gender", "?drug_name", "?dosage_amount", "?dosage_unit", "?route"
 
     return f"""
     SELECT DISTINCT {var1} {var2} {var3} {var4} {var5} {var6} {var7 if not route else ""} WHERE {{
@@ -98,15 +98,15 @@ def get_patient_drug_list(age = "", age_comp = "", gender = "", route = ""):
         {f'FILTER ({var3} = "{gender}")' if gender else ""}
         ?person schema:drug_administered ?indDrug .
         ?indDrug schema:drugType ?drugID .
-        ?indDrug schema:patientDosage ?dosageAmount .
-        ?indDrug schema:doseUnit ?dosageUnit .
+        ?indDrug schema:patientDosage {var5} .
+        ?indDrug schema:doseUnit {var6} .
         ?indDrug schema:routeOfAdministration {'"'+route+'"^^xsd:str' if route else var7} .
-        ?drugID rdfs:label ?drug_name .
+        ?drugID rdfs:label {var4} .
     }}
     """
 
 def get_patient_condition_info(patient_id, date = False):
-    var1, var2, var3 = "?condition_name", "?onSet", "?offSet"
+    var1, var2, var3 = "?condition_name", "?on_set", "?off_set"
 
     return f"""
     SELECT {var1} {var2 if date else ""} {var3 if date else ""} WHERE {{
@@ -122,7 +122,7 @@ def get_patient_condition_info(patient_id, date = False):
     """
 
 def get_patient_condition_list(age = "", age_comp = "", gender = ""):
-    var1, var2, var3, var4 = "?patient_id", "?age", "?gender", "?condition"
+    var1, var2, var3, var4 = "?patient_id", "?age", "?gender", "?condition_name"
 
     return f"""
     SELECT {var1} {var2} {var3} {var4} WHERE {{

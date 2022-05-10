@@ -40,24 +40,6 @@ class ChatBot:
     def setAnswerType(self, answer_type):
         self.query_data['Answer_Type'] = answer_type
 
-    def getIdentifiedEntities(self):
-        entity_scores = self.query_data['Entity_Scores']
-        identified_entities = []
-        for entity in entity_scores:
-            if entity_scores[entity] > self.threshold:
-                identified_entities.append(entity)
-        identified_entities_json = {i: identified_entities[i] for i in identified_entities}
-        return identified_entities_json
-
-    def getOtherEntities(self):
-        entity_scores = self.query_data['Entity_Scores']
-        other_entities = []
-        for entity in entity_scores:
-            if entity_scores[entity] < self.threshold:
-                other_entities.append(entity)
-        other_entities_json = {i: other_entities[i] for i in other_entities}
-        return other_entities_json
-
     def setPrimaryEntityID(self, entity_id):
         if self.query_data['Topic'] == "patient":
             self.query_data['Patient_ID'] = [entity_id]
@@ -76,11 +58,11 @@ class ChatBot:
         applied_filters, flag = "", False
 
         if age_filter['val'] and age_filter['comp']:
-            applied_filters += "Age "+age_filter['comp']+" "+age_filter['val']
+            applied_filters += "Age "+age_filter['comp']+" "+age_filter['val'] +"\n"
             flag = True
         if gender_filter:
+            applied_filters += "Gender = "+gender_filter +"\n"
             flag = True
-            applied_filters += "Gender = "+gender_filter
 
         if flag:
             applied_filters = "The following filters were applied automatically :- \n" + applied_filters
@@ -235,15 +217,17 @@ class ChatBot:
             record = {}
             record['headers'] = response['head']['vars']
             record['data'] = []
+
             for result in response["results"]['bindings']:
                 res = []
                 for attribute in result:
-                    text = attribute.capitalize() + " : " + result[attribute]['value'].split('/')[-1]
+                    text = " ".join([i.capitalize() for i in attribute.split("_")]) + " : " + result[attribute]['value'].split('/')[-1] + "\n"
                     res.append(text)
                 record["data"].append(" ".join(res))
             self.response = record
+            
             if len(response["results"]['bindings']) == 0:
-                self.response = self.response = { 'headers' : [], 'data': ['No results found'] }
+                self.response = { 'headers' : [], 'data': ['No results found'] }
 
         elif self.query_data['Answer_Type'] == "Count":
             sparql.setReturnFormat(JSON)
