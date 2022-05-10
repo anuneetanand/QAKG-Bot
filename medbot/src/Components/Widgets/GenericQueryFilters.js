@@ -9,7 +9,7 @@ const GenericQueryFilters = (props) => {
       id: 2,
     },
     {
-      name: "Cpntinue",
+      name: "Continue",
       id: 3
     }
   ];
