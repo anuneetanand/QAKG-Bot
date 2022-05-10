@@ -6,7 +6,6 @@ import AnswerType from "../Widgets/AnswerType.js";
 import Confirmation from "../Widgets/Confirmation.js";
 import QueryTemplates from "../Widgets/QueryTemplates.js";
 import GenericQueryFilters from "../Widgets/GenericQueryFilters.js";
-import GenericQueryEntities from "../Widgets/GenericQueryEntities.js";
 import SpecificQueryEntities from "../Widgets/SpecificQueryEntities.js";
 import RestartFlow from "../Widgets/RestartFlow.js";
 
@@ -59,12 +58,6 @@ const config = {
     {
       widgetName: "GenericQueryFilters",
       widgetFunc: (props) => <GenericQueryFilters {...props} />,
-      mapStateToProps: ["messages"],
-    },
-
-    {
-      widgetName: "GenericQueryEntities ",
-      widgetFunc: (props) => <GenericQueryEntities  {...props} />,
       mapStateToProps: ["messages"],
     },
 
