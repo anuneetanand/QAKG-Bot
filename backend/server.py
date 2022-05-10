@@ -6,8 +6,8 @@ sparqlEndpoint = "http://Anuneets-MacBook-Air.local:7200/repositories/IFHP"
 confidence_threshold = 0.6
 MedBot = ChatBot(sparql_endpoint = sparqlEndpoint, threshold = confidence_threshold)
 
-userFeedback = {"positive": 0, "negative": 0}
-
+with open("userFeedback.txt", "r") as f:
+	userFeedback = eval(f.read())
 app = Flask(__name__)
 cors = CORS(app, headers=["Access-Control-Allow-Origin", "Content-Type", "Authorization"])
 

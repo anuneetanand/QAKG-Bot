@@ -36,7 +36,7 @@ class ActionProvider {
         params: { queryType: 'specific' },
       }).then((res) => {
           const message = this.createChatBotMessage(
-            "Select the entity you want to query about",
+            "What entity do you want to query about?",
             {
               widget: "SpecificQueryEntities",
             }
@@ -52,7 +52,7 @@ class ActionProvider {
       axios.post(`${backendURI}/sendQueryType`, {
         params: { queryType: 'generic' },
       }).then((res) => {
-        const message = this.createChatBotMessage("Enter your generic query");
+        const message = this.createChatBotMessage("What is your generic query?");
         this.addMessageToBotState(message);
       })
     }
@@ -63,7 +63,7 @@ class ActionProvider {
       axios.post(`${backendURI}/sendQueryTopic`, {
         params: { topic: entityName },
       }).then((res) => {
-          const message = this.createChatBotMessage("Enter your specific query");
+          const message = this.createChatBotMessage("What is your specific query?");
         this.addMessageToBotState(message);
     })
     }
@@ -106,7 +106,7 @@ class ActionProvider {
           needID = res.data["id"];
           if (flag) {
             if (needID.length > 0) {
-              const message = this.createChatBotMessage("Enter the ID for " + needID);
+              const message = this.createChatBotMessage("Can you enter the ID for " + needID);
               this.addMessageToBotState(message);
             } else {
               this.handleQueryTemplates();
@@ -168,7 +168,7 @@ class ActionProvider {
         queryTemplates.push({ name: 'None', id:1000000});
       }).then(() => {
         const message = this.createChatBotMessage(
-        "Select the option which best describes your query",
+        "Which option which best describes your query?",
         {
           widget: "QueryTemplates",
         }
@@ -187,7 +187,7 @@ class ActionProvider {
           this.handleRestartFlow();
         }
         else {
-          const message = this.createChatBotMessage("Is your query confirmed?", {
+          const message = this.createChatBotMessage("Shall I run your query?", {
             widget: "Confirmation",
           });
           this.addMessageToBotState(message);

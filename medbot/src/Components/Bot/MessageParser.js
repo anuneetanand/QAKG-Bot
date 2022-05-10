@@ -13,7 +13,7 @@ class MessageParser {
     const messageStack = this.state.messages.reverse();
     const lastMessage = messageStack[0].message;
 
-    if (lastMessage === "Enter your specific query") {
+    if (lastMessage === "What is your specific query?") {
       if (USING_BACKEND) {
         axios.post(`${backendURI}/sendQuery`, {
           params: { query: message },
@@ -21,7 +21,7 @@ class MessageParser {
       }
       return this.actionProvider.sendAnswerTypeMessage();
     } 
-    else if (lastMessage === "Enter your generic query") {
+    else if (lastMessage === "What is your generic query?") {
       if (USING_BACKEND) {
         axios.post(`${backendURI}/sendQuery`, {
           params: { query: message },
@@ -29,14 +29,13 @@ class MessageParser {
       }
       return this.actionProvider.sendAnswerTypeMessage();
     } 
-    else if (lastMessage.includes("Enter the ID")) {
+    else if (lastMessage.includes("enter the ID")) {
       if (USING_BACKEND) {
         axios.post(`${backendURI}/sendPrimaryEntityID`, {
           params: { id: message },
         }).then(res => {return this.actionProvider.handleQueryTemplates();});
     }}
     else if (lastMessage.includes("Enter Age Filter")){
-      console.log("lolololol")
       this.actionProvider.handleUserEnteredFilter(message, "Age");
     }
     else if (lastMessage.includes("Enter Gender Filter")){

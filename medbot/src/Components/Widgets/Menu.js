@@ -1,5 +1,3 @@
-import "../../styles.css";
-
 const Menu = (props) => {
   const options = [
     {

@@ -107,11 +107,29 @@ class ChatBot:
     def setQueryData(self, new_query_data):
         self.query_data = new_query_data
 
+    def findTemplateScore(self, keywords):
+        Score = self.query_data["Entity_Scores"]
+        Check = {entity: Score[entity] > self.threshold for entity in Score}
+
+        score = 0
+        count = 0
+
+        for keyword in keywords:
+            if Check[keyword]:
+                score += Score[keyword]
+                count += 1
+        
+        if count > 0:
+            score = score/count
+        else:
+            score = 0
+
+        return score
+
     def findTemplates(self):
         if self.verbose: print("Finding Templates")
 
-        Score = self.query_data["Entity_Scores"]
-        Check = {entity: Score[entity] > self.threshold for entity in Score}
+        Check = {entity: self.query_data["Entity_Scores"][entity] > self.threshold for entity in self.query_data["Entity_Scores"]}
         Filters = self.query_data["Filters"]
         Templates = []
 
@@ -120,53 +138,65 @@ class ChatBot:
             if Check["drug"]:
                 template = get_patient_drug_info(self.query_data['Patient_ID'][0], Check["dose"], Check["administration"], Check["date"])
                 description = f'Information about drugs {"dosage" if Check["dose"] else ""} {"route" if Check["administration"] else ""} {"duration" if Check["date"] else ""} given to patient with ID {self.query_data["Patient_ID"][0]}'
-                template_score = (Score["patient"]+Score["dose"]+Score["administration"]+Score["date"])/(int(Check["patient"])+int(Check["dose"])+int(Check["administration"])+int(Check["date"]))
+                template_score = self.findTemplateScore(["patient","drug", "dose", "administration", "date"])
                 Templates.append((template, description, template_score))
 
             if Check["condition"]:
                 template = get_patient_condition_info(self.query_data['Patient_ID'][0], Check["date"])
                 description = f'Information about conditions {"and their duration" if Check["date"] else ""} that affected patient with ID {self.query_data["Patient_ID"][0]}'
-                template_score = (Score["patient"]+Score["date"])/(int(Check["patient"])+int(Check["date"]))
+                template_score = self.findTemplateScore(["patient","condition", "date"])
                 Templates.append((template, description, template_score))
 
-            if Check["age"] or Check["gender"]:
+            if Check["age"] and not Check["gender"]:
+                template = get_patient_info(self.query_data['Patient_ID'][0], True, False)
+                description = f'Information about age of patient with ID : {self.query_data["Patient_ID"][0]}'
+                template_score = self.findTemplateScore(["patient","age"])
+                Templates.append((template, description, template_score))
+
+            if not Check["age"] and Check["gender"]:
+                template = get_patient_info(self.query_data['Patient_ID'][0], True, True)
+                description = f'Information about gender of patient with ID : {self.query_data["Patient_ID"][0]}'
+                template_score = self.findTemplateScore(["patient", "gender"])
+                Templates.append((template, description, template_score))
+
+            if Check["age"] and Check["gender"]:
                 template = get_patient_info(self.query_data['Patient_ID'][0], True, True)
                 description = f'Information about age and gender of patient with ID : {self.query_data["Patient_ID"][0]}'
-                template_score = (Score["patient"]+Score["age"]+Score["gender"])/(int(Check["patient"])+int(Check["age"])+int(Check["gender"]))
+                template_score = self.findTemplateScore(["patient", "age", "gender"])
                 Templates.append((template, description, template_score))
 
         elif self.query_data["Topic"] == "drug" and len(self.query_data['Snomed_ID']):
 
             template = get_drug_info(self.query_data['Snomed_ID'][0], Check["administration"])
             description = f'Information about drug {"and its route" if Check["administration"] else ""}  with Snomed_ID : {self.query_data["Snomed_ID"][0]}'
-            template_score = (Score["drug"]+Score["administration"])/(int(Check["drug"])+int(Check["administration"]))
+            template_score = self.findTemplateScore(["drug", "administration"])
             Templates.append((template, description, template_score))
 
         elif self.query_data["Topic"] == "condition" and len(self.query_data['Snomed_ID']):
 
             template = get_condition(self.query_data['Snomed_ID'][0])
             description = f'Information about condition with Snomed_ID : {self.query_data["Snomed_ID"][0]}'
-            template_score = Score["condition"]
+            template_score = self.findTemplateScore(["condition"])
             Templates.append((template, description, template_score))
 
         else:
 
-            if Check["patient"] or Check["drug"]:
+            if Check["drug"]:
                 template = get_patient_drug_list(Filters['age']['val'], Filters['age']['comp'], Filters['gender'], Filters['administration'])
                 description = f'Filtered Information about patients and drugs given to them'
-                template_score = (Score["patient"]+Score["drug"])/(int(Check["patient"])+int(Check["drug"]))
+                template_score = self.findTemplateScore(["patient", "drug"])
                 Templates.append((template, description, template_score))
             
-            if Check["patient"] or Check["condition"]:
+            if Check["condition"]:
                 template = get_patient_condition_list(Filters['age']['val'], Filters['age']['comp'], Filters['gender'])
                 description = f'Filtered Information about patients and conditions had by them'
-                template_score = (Score["patient"]+Score["condition"])/(int(Check["patient"])+int(Check["condition"]))
+                template_score = self.findTemplateScore(["patient", "condition"])
                 Templates.append((template, description, template_score))
 
             if Check["patient"]:
                 template = get_patient_list(Filters['age']['val'], Filters['age']['comp'], Filters['gender'])
                 description = f'Filtered Information about patients'
-                template_score = Score["patient"]
+                template_score = self.findTemplateScore(["patient", "age", "gender"])
                 Templates.append((template, description, template_score))
 
         Templates.sort(key=lambda x: x[2], reverse=True)

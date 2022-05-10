@@ -1,5 +1,3 @@
-# Dynamic SPARQL Query Templates
-
 def get_prefix():
     return f"""
     PREFIX schema: <http://www.semanticweb.org/btp/clinical/ontology/>
