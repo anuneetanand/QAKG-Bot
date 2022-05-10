@@ -1,0 +1,621 @@
+----------------------------------------------------------------------------------------------------
+Timestamp:2022-05-11 03:03:08.321923
+User Query:What is the age of subject_id_100?
+Question Type:specific
+Topic:patient
+Answer Type:Record
+Query Entities:{'patient': 0.18181818181818182, 'drug': 0.2, 'condition': 0.4, 'gender': 0.3333333333333333, 'age': 1.0, 'administration': 0.2222222222222222, 'dose': 0.16666666666666666, 'date': 0.7692307692307693}
+Query Filters:{'age': {'val': '', 'comp': ''}, 'gender': '', 'administration': ''}
+SPARQL Query:
+
+    PREFIX schema: <http://www.semanticweb.org/btp/clinical/ontology/>
+    PREFIX ex: <http://www.example.org/btp_ontology/individual/>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    
+    SELECT ?age  WHERE {
+        ?person a schema:Patient .
+        ?person schema:hasPatientID "subject_id_100"^^xsd:str .
+        ?person schema:age ?age .
+        
+    }
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+Timestamp:2022-05-11 03:06:52.829650
+User Query:What is the gender of subject_id_4?
+Question Type:specific
+Topic:patient
+Answer Type:Record
+Query Entities:{'patient': 0.15384615384615385, 'drug': 0.16666666666666666, 'condition': 0.35294117647058826, 'gender': 1.0, 'age': 0.6666666666666666, 'administration': 0.2, 'dose': 0.14285714285714285, 'date': 0.2857142857142857}
+Query Filters:{'age': {'val': '', 'comp': ''}, 'gender': '', 'administration': ''}
+SPARQL Query:
+
+    PREFIX schema: <http://www.semanticweb.org/btp/clinical/ontology/>
+    PREFIX ex: <http://www.example.org/btp_ontology/individual/>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    
+    SELECT ?age ?gender WHERE {
+        ?person a schema:Patient .
+        ?person schema:hasPatientID "subject_id_4"^^xsd:str .
+        ?person schema:age ?age .
+        ?person schema:gender ?gender .
+    }
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+Timestamp:2022-05-11 03:08:21.925073
+User Query:What is the sex of subject_id_2?
+Question Type:specific
+Topic:patient
+Answer Type:Record
+Query Entities:{'patient': 0.3333333333333333, 'drug': 0.36363636363636365, 'condition': 0.5, 'gender': 0.7692307692307693, 'age': 0.6666666666666666, 'administration': 0.21052631578947367, 'dose': 0.3076923076923077, 'date': 0.3076923076923077}
+Query Filters:{'age': {'val': '', 'comp': ''}, 'gender': '', 'administration': ''}
+SPARQL Query:
+
+    PREFIX schema: <http://www.semanticweb.org/btp/clinical/ontology/>
+    PREFIX ex: <http://www.example.org/btp_ontology/individual/>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    
+    SELECT ?age ?gender WHERE {
+        ?person a schema:Patient .
+        ?person schema:hasPatientID "subject_id_2"^^xsd:str .
+        ?person schema:age ?age .
+        ?person schema:gender ?gender .
+    }
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+Timestamp:2022-05-11 03:12:36.689529
+User Query:I want to know details about a specific patient.
+Question Type:specific
+Topic:patient
+Answer Type:Record
+Query Entities:{'patient': 1.0, 'drug': 0.8571428571428571, 'condition': 0.5882352941176471, 'gender': 0.8, 'age': 0.5, 'administration': 0.47619047619047616, 'dose': 0.875, 'date': 0.3333333333333333}
+Query Filters:{'age': {'val': '', 'comp': ''}, 'gender': '', 'administration': ''}
+SPARQL Query:
+
+    PREFIX schema: <http://www.semanticweb.org/btp/clinical/ontology/>
+    PREFIX ex: <http://www.example.org/btp_ontology/individual/>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    
+    SELECT  ?gender WHERE {
+        ?person a schema:Patient .
+        ?person schema:hasPatientID "subject_id_111"^^xsd:str .
+        
+        ?person schema:gender ?gender .
+    }
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+Timestamp:2022-05-11 03:15:37.280094
+User Query:Can you tell me age of a specific person?
+Question Type:specific
+Topic:patient
+Answer Type:Record
+Query Entities:{'patient': 0.75, 'drug': 0.8571428571428571, 'condition': 0.4, 'gender': 0.8571428571428571, 'age': 1.0, 'administration': 0.3, 'dose': 0.875, 'date': 0.7692307692307693}
+Query Filters:{'age': {'val': '', 'comp': ''}, 'gender': '', 'administration': ''}
+SPARQL Query:
+
+    PREFIX schema: <http://www.semanticweb.org/btp/clinical/ontology/>
+    PREFIX ex: <http://www.example.org/btp_ontology/individual/>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    
+    SELECT ?age ?gender WHERE {
+        ?person a schema:Patient .
+        ?person schema:hasPatientID "subject_id_1000"^^xsd:str .
+        ?person schema:age ?age .
+        ?person schema:gender ?gender .
+    }
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+Timestamp:2022-05-11 03:17:31.970751
+User Query:Provide me information about the patient whose ID is subject_id_1.
+Question Type:specific
+Topic:patient
+Answer Type:Record
+Query Entities:{'patient': 1.0, 'drug': 0.5454545454545454, 'condition': 0.26666666666666666, 'gender': 0.8, 'age': 0.4, 'administration': 0.3333333333333333, 'dose': 0.46153846153846156, 'date': 0.46153846153846156}
+Query Filters:{'age': {'val': '', 'comp': ''}, 'gender': '', 'administration': ''}
+SPARQL Query:
+
+    PREFIX schema: <http://www.semanticweb.org/btp/clinical/ontology/>
+    PREFIX ex: <http://www.example.org/btp_ontology/individual/>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    
+    SELECT  ?gender WHERE {
+        ?person a schema:Patient .
+        ?person schema:hasPatientID "subject_id_1"^^xsd:str .
+        
+        ?person schema:gender ?gender .
+    }
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+Timestamp:2022-05-11 03:18:40.177354
+User Query:What are the drugs that were given to patient with ID subject_id_2?
+Question Type:specific
+Topic:patient
+Answer Type:Record
+Query Entities:{'patient': 1.0, 'drug': 1.0, 'condition': 0.2222222222222222, 'gender': 0.8, 'age': 0.3076923076923077, 'administration': 0.2857142857142857, 'dose': 0.8571428571428571, 'date': 0.26666666666666666}
+Query Filters:{'age': {'val': '', 'comp': ''}, 'gender': '', 'administration': ''}
+SPARQL Query:
+
+    PREFIX schema: <http://www.semanticweb.org/btp/clinical/ontology/>
+    PREFIX ex: <http://www.example.org/btp_ontology/individual/>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    
+    SELECT DISTINCT ?drug_name ?dosage_amount ?dosage_unit    WHERE {
+        ?person a schema:Patient .
+        ?person schema:hasPatientID "subject_id_2"^^xsd:str .
+        ?person schema:drug_administered ?indDrug .
+        ?indDrug schema:drugType ?drugID .
+        ?indDrug schema:patientDosage ?dosage_amount .
+        ?indDrug schema:doseUnit ?dosage_unit .
+        
+        
+        
+        ?drugID rdfs:label ?drug_name .
+    }
+    
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+Timestamp:2022-05-11 03:20:23.772583
+User Query:How many drugs were given to me?
+Question Type:specific
+Topic:patient
+Answer Type:Record
+Query Entities:{'patient': 0.5454545454545454, 'drug': 1.0, 'condition': 0.2, 'gender': 0.23529411764705882, 'age': 0.26666666666666666, 'administration': 0.2608695652173913, 'dose': 0.8571428571428571, 'date': 0.23529411764705882}
+Query Filters:{'age': {'val': '', 'comp': ''}, 'gender': '', 'administration': ''}
+SPARQL Query:
+
+    PREFIX schema: <http://www.semanticweb.org/btp/clinical/ontology/>
+    PREFIX ex: <http://www.example.org/btp_ontology/individual/>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    
+    SELECT DISTINCT ?drug_name ?dosage_amount ?dosage_unit    WHERE {
+        ?person a schema:Patient .
+        ?person schema:hasPatientID "subject_id_1"^^xsd:str .
+        ?person schema:drug_administered ?indDrug .
+        ?indDrug schema:drugType ?drugID .
+        ?indDrug schema:patientDosage ?dosage_amount .
+        ?indDrug schema:doseUnit ?dosage_unit .
+        
+        
+        
+        ?drugID rdfs:label ?drug_name .
+    }
+    
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+Timestamp:2022-05-11 03:22:03.727533
+User Query:Provide me information about the drugs that were given to subject_id_2 along with route of administration.
+Question Type:specific
+Topic:patient
+Answer Type:Record
+Query Entities:{'patient': 0.5454545454545454, 'drug': 1.0, 'condition': 0.26666666666666666, 'gender': 0.6666666666666666, 'age': 0.4, 'administration': 1.0, 'dose': 0.8571428571428571, 'date': 0.6666666666666666}
+Query Filters:{'age': {'val': '', 'comp': ''}, 'gender': '', 'administration': ''}
+SPARQL Query:
+
+    PREFIX schema: <http://www.semanticweb.org/btp/clinical/ontology/>
+    PREFIX ex: <http://www.example.org/btp_ontology/individual/>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    
+    SELECT DISTINCT ?drug_name ?dosage_amount ?dosage_unit ?route ?start ?end WHERE {
+        ?person a schema:Patient .
+        ?person schema:hasPatientID "subject_id_2"^^xsd:str .
+        ?person schema:drug_administered ?indDrug .
+        ?indDrug schema:drugType ?drugID .
+        ?indDrug schema:patientDosage ?dosage_amount .
+        ?indDrug schema:doseUnit ?dosage_unit .
+        ?indDrug schema:routeOfAdministration ?route .
+        ?indDrug schema:drug_adm_start ?start .
+        ?indDrug schema:drug_adm_end ?end .
+        ?drugID rdfs:label ?drug_name .
+    }
+    
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+Timestamp:2022-05-11 03:23:20.494317
+User Query:What dose of different drugs were given to subject_id_2?
+Question Type:specific
+Topic:patient
+Answer Type:Record
+Query Entities:{'patient': 0.5454545454545454, 'drug': 1.0, 'condition': 0.782608695652174, 'gender': 0.3333333333333333, 'age': 0.4, 'administration': 0.2608695652173913, 'dose': 1.0, 'date': 0.5}
+Query Filters:{'age': {'val': '', 'comp': ''}, 'gender': '', 'administration': ''}
+SPARQL Query:
+
+    PREFIX schema: <http://www.semanticweb.org/btp/clinical/ontology/>
+    PREFIX ex: <http://www.example.org/btp_ontology/individual/>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    
+    SELECT DISTINCT ?drug_name ?dosage_amount ?dosage_unit    WHERE {
+        ?person a schema:Patient .
+        ?person schema:hasPatientID "subject_id_2"^^xsd:str .
+        ?person schema:drug_administered ?indDrug .
+        ?indDrug schema:drugType ?drugID .
+        ?indDrug schema:patientDosage ?dosage_amount .
+        ?indDrug schema:doseUnit ?dosage_unit .
+        
+        
+        
+        ?drugID rdfs:label ?drug_name .
+    }
+    
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+Timestamp:2022-05-11 03:27:09.734268
+User Query:What were the start and end dates for different drugs given to subject_id_2?
+Question Type:specific
+Topic:patient
+Answer Type:Record
+Query Entities:{'patient': 0.631578947368421, 'drug': 1.0, 'condition': 0.5333333333333333, 'gender': 0.4, 'age': 0.6, 'administration': 0.5714285714285714, 'dose': 0.8571428571428571, 'date': 1.0}
+Query Filters:{'age': {'val': '', 'comp': ''}, 'gender': '', 'administration': ''}
+SPARQL Query:
+
+    PREFIX schema: <http://www.semanticweb.org/btp/clinical/ontology/>
+    PREFIX ex: <http://www.example.org/btp_ontology/individual/>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    
+    SELECT DISTINCT ?drug_name ?dosage_amount ?dosage_unit ?route ?start ?end WHERE {
+        ?person a schema:Patient .
+        ?person schema:hasPatientID "subject_id_2"^^xsd:str .
+        ?person schema:drug_administered ?indDrug .
+        ?indDrug schema:drugType ?drugID .
+        ?indDrug schema:patientDosage ?dosage_amount .
+        ?indDrug schema:doseUnit ?dosage_unit .
+        ?indDrug schema:routeOfAdministration ?route .
+        ?indDrug schema:drug_adm_start ?start .
+        ?indDrug schema:drug_adm_end ?end .
+        ?drugID rdfs:label ?drug_name .
+    }
+    
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+Timestamp:2022-05-11 03:29:28.575924
+User Query:What were the conditions that subject_id_1 experienced?
+Question Type:specific
+Topic:patient
+Answer Type:Record
+Query Entities:{'patient': 0.18181818181818182, 'drug': 0.2, 'condition': 1.0, 'gender': 0.3333333333333333, 'age': 0.6, 'administration': 0.5714285714285714, 'dose': 0.16666666666666666, 'date': 0.3333333333333333}
+Query Filters:{'age': {'val': '', 'comp': ''}, 'gender': '', 'administration': ''}
+SPARQL Query:
+
+    PREFIX schema: <http://www.semanticweb.org/btp/clinical/ontology/>
+    PREFIX ex: <http://www.example.org/btp_ontology/individual/>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    
+    SELECT ?condition_name   WHERE {
+        ?person a schema:Patient.
+        ?person schema:hasPatientID "subject_id_1"^^xsd:str .
+        ?person schema:hasCondition ?indCond .
+        ?indCond a schema:IndividualCondition .
+        ?indCond schema:dateOfOnset ?on_set .
+        ?indCond schema:dateOfOffset ?off_set .
+        ?indCond  schema:conditionType ?condition .
+        ?condition rdfs:label ?condition_name  .
+    }
+    
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+Timestamp:2022-05-11 03:30:29.123850
+User Query:What is the name of drug with snomed_id 1378382?
+Question Type:specific
+Topic:drug
+Answer Type:Record
+Query Entities:{'patient': 0.631578947368421, 'drug': 1.0, 'condition': 0.42105263157894735, 'gender': 0.375, 'age': 0.42857142857142855, 'administration': 0.4166666666666667, 'dose': 0.8571428571428571, 'date': 0.3076923076923077}
+Query Filters:{'age': {'val': '', 'comp': ''}, 'gender': '', 'administration': ''}
+SPARQL Query:
+
+    PREFIX schema: <http://www.semanticweb.org/btp/clinical/ontology/>
+    PREFIX ex: <http://www.example.org/btp_ontology/individual/>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    
+    SELECT DISTINCT ?drug_name  WHERE {
+        ?drug a schema:Drug .
+        ?drug schema:snomed_id "1378382"^^xsd:integer .
+        ?drug rdfs:label ?drug_name .
+    	?indDrug schema:drugType ?drug .
+        
+    }
+    
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+Timestamp:2022-05-11 03:32:07.987528
+User Query:Is there a drug with snomed_id 1997881?
+Question Type:specific
+Topic:drug
+Answer Type:Boolean
+Query Entities:{'patient': 0.5454545454545454, 'drug': 1.0, 'condition': 0.13333333333333333, 'gender': 0.16666666666666666, 'age': 0.2, 'administration': 0.1111111111111111, 'dose': 0.8571428571428571, 'date': 0.16666666666666666}
+Query Filters:{'age': {'val': '', 'comp': ''}, 'gender': '', 'administration': ''}
+SPARQL Query:
+
+    PREFIX schema: <http://www.semanticweb.org/btp/clinical/ontology/>
+    PREFIX ex: <http://www.example.org/btp_ontology/individual/>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    
+    SELECT DISTINCT ?drug_name  WHERE {
+        ?drug a schema:Drug .
+        ?drug schema:snomed_id "1997881"^^xsd:integer .
+        ?drug rdfs:label ?drug_name .
+    	?indDrug schema:drugType ?drug .
+        
+    }
+    
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+Timestamp:2022-05-11 03:33:29.238357
+User Query:Give details about snomed_id 1997881.
+Question Type:specific
+Topic:drug
+Answer Type:Record
+Query Entities:{'patient': 0.18181818181818182, 'drug': 0.2, 'condition': 0.35294117647058826, 'gender': 0.4, 'age': 0.6666666666666666, 'administration': 0.47619047619047616, 'dose': 0.16666666666666666, 'date': 0.3333333333333333}
+Query Filters:{'age': {'val': '', 'comp': ''}, 'gender': '', 'administration': ''}
+SPARQL Query:
+
+    PREFIX schema: <http://www.semanticweb.org/btp/clinical/ontology/>
+    PREFIX ex: <http://www.example.org/btp_ontology/individual/>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    
+    SELECT DISTINCT ?drug_name  WHERE {
+        ?drug a schema:Drug .
+        ?drug schema:snomed_id "1997881"^^xsd:integer .
+        ?drug rdfs:label ?drug_name .
+    	?indDrug schema:drugType ?drug .
+        
+    }
+    
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+Timestamp:2022-05-11 03:34:33.009515
+User Query:What is the route of administration of drug with snomed_id 1113073?
+Question Type:specific
+Topic:drug
+Answer Type:Record
+Query Entities:{'patient': 0.5454545454545454, 'drug': 1.0, 'condition': 0.25, 'gender': 0.46153846153846156, 'age': 0.36363636363636365, 'administration': 1.0, 'dose': 0.8571428571428571, 'date': 0.6666666666666666}
+Query Filters:{'age': {'val': '', 'comp': ''}, 'gender': '', 'administration': ''}
+SPARQL Query:
+
+    PREFIX schema: <http://www.semanticweb.org/btp/clinical/ontology/>
+    PREFIX ex: <http://www.example.org/btp_ontology/individual/>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    
+    SELECT DISTINCT ?drug_name ?route WHERE {
+        ?drug a schema:Drug .
+        ?drug schema:snomed_id "1113073"^^xsd:integer .
+        ?drug rdfs:label ?drug_name .
+    	?indDrug schema:drugType ?drug .
+        ?indDrug schema:routeOfAdministration ?route .
+    }
+    
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Timestamp:2022-05-11 03:37:25.716053
+User Query:What is the name of condition with snomed_id 438398?
+Question Type:specific
+Topic:condition
+Answer Type:Record
+Query Entities:{'patient': 0.631578947368421, 'drug': 0.5, 'condition': 1.0, 'gender': 0.375, 'age': 0.6, 'administration': 0.5714285714285714, 'dose': 0.42857142857142855, 'date': 0.3333333333333333}
+Query Filters:{'age': {'val': '', 'comp': ''}, 'gender': '', 'administration': ''}
+SPARQL Query:
+
+    PREFIX schema: <http://www.semanticweb.org/btp/clinical/ontology/>
+    PREFIX ex: <http://www.example.org/btp_ontology/individual/>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    
+    SELECT ?condition_name WHERE {
+        ?condition a schema:Condition .
+        ?condition schema:snomed_id "438398"^^xsd:integer .
+        ?condition rdfs:label ?condition_name
+    }
+    
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+Timestamp:2022-05-11 03:38:12.509222
+User Query:Provide information about snomed_id 40.
+Question Type:specific
+Topic:drug
+Answer Type:Record
+Query Entities:{'patient': 0.18181818181818182, 'drug': 0.2, 'condition': 0.26666666666666666, 'gender': 0.6666666666666666, 'age': 0.4, 'administration': 0.3333333333333333, 'dose': 0.16666666666666666, 'date': 0.46153846153846156}
+Query Filters:{'age': {'val': '', 'comp': ''}, 'gender': '', 'administration': ''}
+SPARQL Query:
+
+    PREFIX schema: <http://www.semanticweb.org/btp/clinical/ontology/>
+    PREFIX ex: <http://www.example.org/btp_ontology/individual/>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    
+    SELECT DISTINCT ?drug_name  WHERE {
+        ?drug a schema:Drug .
+        ?drug schema:snomed_id "40"^^xsd:integer .
+        ?drug rdfs:label ?drug_name .
+    	?indDrug schema:drugType ?drug .
+        
+    }
+    
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+Timestamp:2022-05-11 03:40:58.464038
+User Query:Tell me the name of conditions experienced by kids under 2.
+Question Type:generic
+Topic:
+Answer Type:Record
+Query Entities:{'patient': 0.6666666666666666, 'drug': 0.5454545454545454, 'condition': 1.0, 'gender': 0.375, 'age': 0.6, 'administration': 0.5714285714285714, 'dose': 0.46153846153846156, 'date': 0.4}
+Query Filters:{'age': {'val': '2', 'comp': '<'}, 'gender': '', 'administration': ''}
+SPARQL Query:
+
+    PREFIX schema: <http://www.semanticweb.org/btp/clinical/ontology/>
+    PREFIX ex: <http://www.example.org/btp_ontology/individual/>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    
+    SELECT ?patient_id ?age ?gender ?condition_name WHERE {
+        ?person a schema:Patient.
+        ?person schema:hasPatientID ?patient_id .
+        ?person schema:age ?age .
+        ?person schema:gender ?gender .
+        FILTER (?age < 2)
+        
+        ?person schema:hasCondition ?indCond .
+        ?indCond a schema:IndividualCondition .
+        ?indCond  schema:conditionType ?condition .
+        ?condition rdfs:label ?condition_name  .
+    }
+    
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+Timestamp:2022-05-11 03:45:07.310502
+User Query:Is there a condition with snomed_id 100?
+Question Type:specific
+Topic:condition
+Answer Type:Boolean
+Query Entities:{'patient': 0.18181818181818182, 'drug': 0.2, 'condition': 1.0, 'gender': 0.3333333333333333, 'age': 0.6, 'administration': 0.5714285714285714, 'dose': 0.16666666666666666, 'date': 0.4}
+Query Filters:{'age': {'val': '', 'comp': ''}, 'gender': '', 'administration': ''}
+SPARQL Query:
+
+    PREFIX schema: <http://www.semanticweb.org/btp/clinical/ontology/>
+    PREFIX ex: <http://www.example.org/btp_ontology/individual/>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    
+    SELECT ?condition_name WHERE {
+        ?condition a schema:Condition .
+        ?condition schema:snomed_id "100"^^xsd:integer .
+        ?condition rdfs:label ?condition_name
+    }
+    
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+Timestamp:2022-05-11 03:52:06.481775
+User Query:How many male patients are there?
+Question Type:generic
+Topic:
+Answer Type:Count
+Query Entities:{'patient': 1.0, 'drug': 0.6, 'condition': 0.2222222222222222, 'gender': 0.8, 'age': 0.3076923076923077, 'administration': 0.19047619047619047, 'dose': 0.5, 'date': 0.26666666666666666}
+Query Filters:{'age': {'val': '', 'comp': ''}, 'gender': 'M', 'administration': ''}
+SPARQL Query:
+
+    PREFIX schema: <http://www.semanticweb.org/btp/clinical/ontology/>
+    PREFIX ex: <http://www.example.org/btp_ontology/individual/>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    
+    SELECT ?patient_id ?age ?gender WHERE {
+        ?person a schema:Patient .
+        ?person schema:hasPatientID ?patient_id .
+        ?person schema:age ?age .
+        ?person schema:gender ?gender .
+        
+        FILTER (?gender = "M")
+    }
+    
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+Timestamp:2022-05-11 03:52:54.946174
+User Query:Is there a patient with age > 100?
+Question Type:generic
+Topic:
+Answer Type:Boolean
+Query Entities:{'patient': 1.0, 'drug': 0.5454545454545454, 'condition': 0.4, 'gender': 0.8, 'age': 1.0, 'administration': 0.2222222222222222, 'dose': 0.46153846153846156, 'date': 0.7692307692307693}
+Query Filters:{'age': {'val': '100', 'comp': '>'}, 'gender': '', 'administration': ''}
+SPARQL Query:
+
+    PREFIX schema: <http://www.semanticweb.org/btp/clinical/ontology/>
+    PREFIX ex: <http://www.example.org/btp_ontology/individual/>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    
+    SELECT ?patient_id ?age ?gender WHERE {
+        ?person a schema:Patient .
+        ?person schema:hasPatientID ?patient_id .
+        ?person schema:age ?age .
+        ?person schema:gender ?gender .
+        FILTER (?age > 100)
+        
+    }
+    
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+Timestamp:2022-05-11 03:56:07.060381
+User Query:What is the age of subject_id_100?
+Question Type:specific
+Topic:patient
+Answer Type:Record
+Query Entities:{'patient': 0.18181818181818182, 'drug': 0.2, 'condition': 0.4, 'gender': 0.3333333333333333, 'age': 1.0, 'administration': 0.2222222222222222, 'dose': 0.16666666666666666, 'date': 0.7692307692307693}
+Query Filters:{'age': {'val': '', 'comp': ''}, 'gender': '', 'administration': ''}
+SPARQL Query:
+
+    PREFIX schema: <http://www.semanticweb.org/btp/clinical/ontology/>
+    PREFIX ex: <http://www.example.org/btp_ontology/individual/>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    
+    SELECT ?age  WHERE {
+        ?person a schema:Patient .
+        ?person schema:hasPatientID "subject_id_100"^^xsd:str .
+        ?person schema:age ?age .
+        
+    }
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+Timestamp:2022-05-11 03:57:17.952755
+User Query:Tell me the name of conditions experienced by kids under 2.
+Question Type:generic
+Topic:
+Answer Type:Record
+Query Entities:{'patient': 0.6666666666666666, 'drug': 0.5454545454545454, 'condition': 1.0, 'gender': 0.375, 'age': 0.6, 'administration': 0.5714285714285714, 'dose': 0.46153846153846156, 'date': 0.4}
+Query Filters:{'age': {'val': '2', 'comp': '<'}, 'gender': '', 'administration': ''}
+SPARQL Query:
+
+    PREFIX schema: <http://www.semanticweb.org/btp/clinical/ontology/>
+    PREFIX ex: <http://www.example.org/btp_ontology/individual/>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    
+    SELECT ?patient_id ?age ?gender ?condition_name WHERE {
+        ?person a schema:Patient.
+        ?person schema:hasPatientID ?patient_id .
+        ?person schema:age ?age .
+        ?person schema:gender ?gender .
+        FILTER (?age < 2)
+        
+        ?person schema:hasCondition ?indCond .
+        ?indCond a schema:IndividualCondition .
+        ?indCond  schema:conditionType ?condition .
+        ?condition rdfs:label ?condition_name  .
+    }
+    
+----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+Timestamp:2022-05-11 04:06:07.562625
+User Query:What is the name of drug with snomed_id 1378382?
+Question Type:specific
+Topic:drug
+Answer Type:Record
+Query Entities:{'patient': 0.631578947368421, 'drug': 1.0, 'condition': 0.42105263157894735, 'gender': 0.375, 'age': 0.42857142857142855, 'administration': 0.4166666666666667, 'dose': 0.8571428571428571, 'date': 0.3076923076923077}
+Query Filters:{'age': {'val': '', 'comp': ''}, 'gender': '', 'administration': ''}
+SPARQL Query:
+
+    PREFIX schema: <http://www.semanticweb.org/btp/clinical/ontology/>
+    PREFIX ex: <http://www.example.org/btp_ontology/individual/>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    
+    SELECT DISTINCT ?drug_name  WHERE {
+        ?drug a schema:Drug .
+        ?drug schema:snomed_id "1378382"^^xsd:integer .
+        ?drug rdfs:label ?drug_name .
+    	?indDrug schema:drugType ?drug .
+        
+    }
+    
+----------------------------------------------------------------------------------------------------
