@@ -133,7 +133,6 @@ class ActionProvider {
         .then((res) => {
           flag = res.data["flag"];
           filters = res.data["filters"];
-          console.log(filters)
           if (flag) {
             const filter_info = this.createChatBotMessage(filters);
             this.addMessageToBotState(filter_info);
@@ -228,7 +227,6 @@ class ActionProvider {
 
   handleUserEnteredFilter = (filter, filterName) => {
     selectedFilters.push({name: filterName, filter:filter})
-    console.log(selectedFilters)
   }
 
   handleUserSelectedFilter  = (filter) => {

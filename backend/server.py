@@ -1,10 +1,13 @@
+from tabnanny import verbose
 from flask import Flask, jsonify, request, Response
 from flask_cors import CORS
 from chatbot import ChatBot
+from datetime import datetime
 
 sparqlEndpoint = "http://Anuneets-MacBook-Air.local:7200/repositories/IFHP"
 confidence_threshold = 0.6
-MedBot = ChatBot(sparql_endpoint = sparqlEndpoint, threshold = confidence_threshold)
+verbose = True
+MedBot = ChatBot(sparql_endpoint = sparqlEndpoint, threshold = confidence_threshold, verbose=verbose)
 
 with open("userFeedback.txt", "r") as f:
 	userFeedback = eval(f.read())
@@ -113,8 +116,9 @@ def sendConfirmation():
 	if(request.method == 'POST'):
 		data = request.get_json()['params']
 		if(data['confirmation'] == 'Yes'):
-			userFeedback['positive'] += 1
 			MedBot.executeQuery()
+			userFeedback['positive'] += 1
+			if verbose: log()
 		else:
 			userFeedback['negative'] += 1
 		return Response(status=200)
@@ -132,6 +136,22 @@ def restart():
 			file.write(str(userFeedback))
 		MedBot.restart()
 		return Response(status=200)
+
+def log():
+	print("Hello World")
+	Data = MedBot.getQueryData()
+	with open('logs.txt','a') as file:
+		file.write("-"*100+"\n")
+		file.write("Timestamp :"+str(datetime.now())+"\n")
+		file.write("User Query :"+str(MedBot.user_query)+"\n")
+		file.write("User Query Type :"+str(MedBot.query_type)+"\n")
+		file.write("User Query Topic :"+str(Data['Topic'])+"\n")
+		file.write("User Query Answer Type :"+str(Data['Answer_Type'])+"\n")
+		file.write("User Query Entities :"+str(Data['Entity_Scores'])+"\n")
+		file.write("User Query Filters :"+str(Data['Filters'])+"\n")
+		file.write("SPARQL Query :"+str(MedBot.sparql_query)+"\n")
+		file.write("-"*100+"\n")
+
 
 if __name__ == '__main__':
 	app.run(debug = True)
