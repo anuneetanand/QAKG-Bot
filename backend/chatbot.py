@@ -108,7 +108,7 @@ class ChatBot:
         self.query_data = new_query_data
 
     def findTemplateScore(self, keywords):
-        Score = self.query_data["Entity_Scores"]
+        Score = self.query_data['Entity_Scores']
         Check = {entity: Score[entity] > self.threshold for entity in Score}
 
         score = 0
@@ -129,7 +129,7 @@ class ChatBot:
     def findTemplates(self):
         if self.verbose: print("Finding Templates")
 
-        Check = {entity: self.query_data["Entity_Scores"][entity] > self.threshold for entity in self.query_data["Entity_Scores"]}
+        Check = {entity: self.query_data['Entity_Scores'][entity] > self.threshold for entity in self.query_data['Entity_Scores']}
         Filters = self.query_data["Filters"]
         Templates = []
 
@@ -154,7 +154,7 @@ class ChatBot:
                 Templates.append((template, description, template_score))
 
             if not Check["age"] and Check["gender"]:
-                template = get_patient_info(self.query_data['Patient_ID'][0], True, True)
+                template = get_patient_info(self.query_data['Patient_ID'][0], False, True)
                 description = f'Information about gender of patient with ID : {self.query_data["Patient_ID"][0]}'
                 template_score = self.findTemplateScore(["patient", "gender"])
                 Templates.append((template, description, template_score))

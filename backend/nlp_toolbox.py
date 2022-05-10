@@ -65,12 +65,12 @@ class NLP_Toolbox:
             if keyword == 'child' or keyword == 'kid':
                 self.data['Filters']['age'] = {'val':"18",'comp':"<"}
             if keyword == 'adult' or keyword == 'mature':
-                self.data['Filters']['gender'] = {'val':"18",'comp':">"}
+                self.data['Filters']['age'] = {'val':"18",'comp':">"}
             if keyword == 'old' or keyword == 'senior':
-                self.data['Filters']['gender'] = {'val':"60",'comp':">"}
+                self.data['Filters']['age'] = {'val':"60",'comp':">"}
 
         for term in self.custom_vocabulary['routes']:
-            if term.lower() in self.text.lower():
+            if term.lower() in self.text.lower().split():
                 self.data['Filters']['administration'] = term
                 break
         

@@ -106,7 +106,7 @@ class ActionProvider {
           needID = res.data["id"];
           if (flag) {
             if (needID.length > 0) {
-              const message = this.createChatBotMessage("Can you enter the ID for " + needID);
+              const message = this.createChatBotMessage("Can you enter the ID for " + needID + "?");
               this.addMessageToBotState(message);
             } else {
               this.handleQueryTemplates();
