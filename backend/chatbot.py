@@ -25,6 +25,8 @@ class ChatBot:
 
     def setQueryType(self, query_type):
         self.query_type = query_type
+        if self.query_type == "generic":
+            self.query_data['Topic'] = ""
 
     def setQuery(self, user_query):
         self.user_query = user_query
@@ -69,24 +71,35 @@ class ChatBot:
             return len(self.query_data['Snomed_ID']) == 1
 
     def findAppliedFilters(self):
-        applied_filters = ["The following filters were applied automatically :"]
-        if self.query_data["Filters"]["age"]["val"] and self.query_data["Filters"]["age"]["comp"]:
-            applied_filters.append(" Age "+self.query_data["Filters"]["age"]['comp']+" "+self.query_data["Filters"]["age"]['val'])
-        if self.query_data["Filters"]["gender"]:
-            applied_filters.append("Gender :", self.query_data["Filters"]["gender"])
-        if self.query_data["Filters"]["administration"]:
-            applied_filters.append("Route of Administration :", self.query_data["Filters"]["administration"])
+        age_filter = self.query_data['Filters']['age']
+        gender_filter = self.query_data['Filters']['gender']
+        applied_filters, flag = "", False
+
+        if age_filter['val'] and age_filter['comp']:
+            applied_filters += "Age "+age_filter['comp']+" "+age_filter['val']
+            flag = True
+        if gender_filter:
+            flag = True
+            applied_filters += "Gender = "+gender_filter
+
+        if flag:
+            applied_filters = "The following filters were applied automatically :- \n" + applied_filters
+        else:
+            applied_filters = "No Filters were detected"
+
         return applied_filters
 
-    def findPossibleFilters(self):
-        possible_filters = ["The following filters are possible :"]
-        if not self.query_data["Filters"]["age"]["val"] or not self.query_data["Filters"]["age"]["comp"]:
-            possible_filters.append(" Age (Eg: Age < 30)")
-        if not self.query_data["Filters"]["gender"]:
-            possible_filters.append("Gender (Eg: Gender = M)")
-        if not self.query_data["Filters"]["administration"]:
-            possible_filters.append("Route of Administration (Eg: Oral)")
-        return possible_filters
+    def updateFilters(self, filters):
+        for entry in filters:
+            if entry['name'] == "Age":
+                val = re.findall(r'([0-9]+)', entry['filter'])
+                comp = re.findall(r'(<=|>=|<|=|>)', entry['filter'])
+                self.query_data['Filters']['age'] = {'val': val[0], 'comp': comp[0]}
+            elif entry['name'] == "Gender":
+                if "M" in entry['filter']:
+                    self.query_data['Filters']['gender'] = "M"
+                else:
+                    self.query_data['Filters']['gender'] = "F"
 
     def getQueryData(self):
         return self.query_data

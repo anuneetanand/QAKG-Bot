@@ -5,8 +5,7 @@ const backendURI = "http://127.0.0.1:5000";
 
 var queryType = "";
 var queryTemplates = [];
-var selectedFiltersGenericQuery = [];
-var selectedEntitiesGenericQuery = [];
+var selectedFilters = [];
 class ActionProvider {
   constructor(
     createChatBotMessage,
@@ -70,22 +69,6 @@ class ActionProvider {
     }
   };
 
-  handleGenericQueryFilters = () => {
-    let filters = [];
-    if (USING_BACKEND) {
-      axios.get(`${backendURI}/getPossibleFilters`, {
-        params: { 'lol':'lol' },
-      }).then((res) => {
-        filters = res.data['filters'];
-        filters.forEach(filter => {
-          const message = this.createChatBotMessage(filter);
-          this.addMessageToBotState(message);
-        });
-      this.handleQueryTemplates();
-      })
-  }
-};
-
   sendAnswerTypeMessage = () => {
     const message = this.createChatBotMessage(
       "Select the desired answer type",
@@ -137,7 +120,7 @@ class ActionProvider {
           }
         });
       }
-    }
+  }
 
   handleGenericQueryRequests = () => {
     let flag = true;
@@ -150,12 +133,14 @@ class ActionProvider {
         .then((res) => {
           flag = res.data["flag"];
           filters = res.data["filters"];
+          console.log(filters)
           if (flag) {
-                filters.forEach((filter) => {
-                  const message = this.createChatBotMessage(filter);
-                  this.addMessageToBotState(message);
-                });
-                this.handleGenericQueryFilters()
+            const filter_info = this.createChatBotMessage(filters);
+            this.addMessageToBotState(filter_info);
+            const message = this.createChatBotMessage("Enter/Modify the filters for your query",{
+              widget: "GenericQueryFilters",
+            });
+            this.addMessageToBotState(message);
           } else {
             const message = this.createChatBotMessage(
               "Not a valid query, please start again"
@@ -241,98 +226,32 @@ class ActionProvider {
     }
   };
 
-  // handleGenericQueryEntities = () => {
-  //   const message = this.createChatBotMessage(
-  //     "Select all entities which are a part of your query",
-  //     {
-  //       widget: "EntitiesGenericQueries",
-  //     }
-  //   );
-  //   this.addMessageToBotState(message);
-  // };
+  handleUserEnteredFilter = (filter, filterName) => {
+    selectedFilters.push({name: filterName, filter:filter})
+    console.log(selectedFilters)
+  }
 
-  // handleUserSelectedEntity = (entity) => {
-  //   if (entity.name === "Stop") {
-  //     console.log("selected entities: " + selectedEntitiesGenericQuery);
-  //     if (USING_BACKEND) {
-  //       axios.post(`${backendURI}/sendSelectedEntities`, {
-  //         params: { entities: selectedEntitiesGenericQuery },
-  //       });
-  //     }
-  //     let filters = ["years"];
-  //     let flag = true;
-  //     if (USING_BACKEND) {
-  //       axios
-  //         .get(`${backendURI}/getQueryRequests`, {
-  //           params: { queryMode: "Generic" },
-  //         })
-  //         .then((res) => {
-  //           filters = res.data["filters"];
-  //           flag = res.data["flag"];
-  //         });
-  //     }
-  //     if (!flag) {
-  //       const message = this.createChatBotMessage(
-  //         "Not a valid query, start again"
-  //       );
-  //       this.addMessageToBotState(message);
-  //       this.handleRestartFlow();
-  //     } else {
-  //       let filtersApplied = "";
-  //       filters.forEach((filter) => {
-  //         filtersApplied += filter + ", ";
-  //       });
-  //       if (filtersApplied !== "") {
-  //         const messageFilterApplied = this.createChatBotMessage(
-  //           `${filtersApplied} have already been applied`
-  //         );
-  //         this.addMessageToBotState(messageFilterApplied);
-  //       }
-  //       const message = this.createChatBotMessage(
-  //         "Select filter(s) to apply to your query",
-  //         {
-  //           widget: "FiltersGenericQuery",
-  //         }
-  //       );
-  //       this.addMessageToBotState(message);
-  //     }
-  //   } else {
-  //     selectedEntitiesGenericQuery.push(entity);
-  //     const message = this.createChatBotMessage(entity.name);
-  //     this.addMessageToBotState(message);
-  //   }
-  // };
+  handleUserSelectedFilter  = (filter) => {
+    if (filter === "Age"){
+      const message = this.createChatBotMessage("Enter Age Filter", {})
+      this.addMessageToBotState(message);
+    }
+    else if (filter === "Gender"){
+      const message = this.createChatBotMessage("Enter Gender Filter", {})
+      this.addMessageToBotState(message);
+    }
+    else {
+      this.sendUserSelectedFilters()
+    }
+  }
 
-  // handleUserSelectedFilter = (filter) => {
-  //   if (filter.name === "Stop") {
-  //     console.log("correct filters?");
-  //     console.log(selectedFiltersGenericQuery);
-  //     if (USING_BACKEND) {
-  //       axios.post(`${backendURI}/sendFilters`, {
-  //         params: { filters: selectedFiltersGenericQuery },
-  //       });
-  //     }
-  //     const message = this.createChatBotMessage(
-  //       "Select one of the following queries",
-  //       {
-  //         widget: "SampleQueriesGeneric",
-  //       }
-  //     );
-  //     this.addMessageToBotState(message);
-  //   } else {
-  //     const message = this.createChatBotMessage(`Enter ${filter.name} value:`);
-  //     this.addMessageToBotState(message);
-  //   }
-  // };
-
-  // saveUserEnteredFilterValue = (filterName, filterValue) => {
-  //   selectedFiltersGenericQuery.push({
-  //     filterName: filterName,
-  //     filterValue: filterValue,
-  //   });
-  //   console.log("what????");
-  //   console.log(selectedFiltersGenericQuery);
-  // };
+  sendUserSelectedFilters = () => {
+    if (USING_BACKEND) {
+      axios.post(`${backendURI}/sendFilters`, {
+        params: { filters: selectedFilters },
+      }).then(() => { this.handleQueryTemplates(); });
+    }
+  };
 
   handleStop = () => {
     this.resetGlobalVariables();
@@ -357,8 +276,7 @@ class ActionProvider {
       axios.post(`${backendURI}/restart`);
     }
     queryType = "";
-    selectedEntitiesGenericQuery = [];
-    selectedFiltersGenericQuery = [];
+    selectedFilters = [];
   };
 
   addMessageToBotState = (messages) => {

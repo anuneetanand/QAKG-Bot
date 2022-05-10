@@ -57,7 +57,7 @@ const config = {
     },
 
     {
-      widgetName: "GenericQueryFilters ",
+      widgetName: "GenericQueryFilters",
       widgetFunc: (props) => <GenericQueryFilters {...props} />,
       mapStateToProps: ["messages"],
     },

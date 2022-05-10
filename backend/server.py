@@ -79,20 +79,12 @@ def sendPrimaryEntityID():
 		MedBot.setPrimaryEntityID(data['id'])
 		return Response(status=200)
 
-@app.route('/getPossibleFilters', methods = ['GET'])
-def getPossibleFilters():
-	if(request.method == 'GET'):
-		possible_filters = MedBot.findPossibleFilters()
-		print("possible filters: ", possible_filters)
-		return jsonify({'filters': possible_filters})
-
 @app.route('/sendFilters', methods = ['POST'])
 def sendFilters():
 	if(request.method == 'POST'):
 		data = request.get_json()['params']
 		filters = data['filters']
-		query_data = MedBot.getQueryData()
-		query_data['Filters'] = filters
+		MedBot.updateFilters(filters)
 		return Response(status=200)
 
 @app.route('/getPossibleTemplates', methods = ['GET'])
@@ -112,6 +104,7 @@ def sendTemplate():
 			userFeedback['negative'] += 1
 		else:
 			best_template = MedBot.getTemplates()[template_id][0]
+			print(best_template)
 			MedBot.prepareQuery(best_template)
 		return Response(status=200)
 

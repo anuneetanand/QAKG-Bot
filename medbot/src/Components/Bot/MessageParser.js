@@ -34,7 +34,14 @@ class MessageParser {
         axios.post(`${backendURI}/sendPrimaryEntityID`, {
           params: { id: message },
         }).then(res => {return this.actionProvider.handleQueryTemplates();});
-    }} 
+    }}
+    else if (lastMessage.includes("Enter Age Filter")){
+      console.log("lolololol")
+      this.actionProvider.handleUserEnteredFilter(message, "Age");
+    }
+    else if (lastMessage.includes("Enter Gender Filter")){
+      this.actionProvider.handleUserEnteredFilter(message, "Gender");
+    }
   };
 }
 
