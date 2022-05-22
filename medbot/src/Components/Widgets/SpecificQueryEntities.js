@@ -5,7 +5,7 @@ const SpecificQueryEntities = (props) => {
       id: 1,
     },
     {
-      name: "Disease",
+      name: "Condition",
       id: 2,
     },
     {

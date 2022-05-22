@@ -8,6 +8,7 @@ class ChatBot:
         self.sparql_endpoint = sparql_endpoint
         self.threshold = threshold
         self.user_query = ""
+        self.query_type = ""
         self.query_data = {}
         self.templates = []
         self.sparql_query = ""
@@ -16,10 +17,16 @@ class ChatBot:
 
     def restart(self):
         self.user_query = ""
+        self.query_type = ""
         self.query_data = {}
         self.templates = []
         self.sparql_query = ""
         self.response = ""
+
+    def setQueryType(self, query_type):
+        self.query_type = query_type
+        if self.query_type == "generic":
+            self.query_data['Topic'] = ""
 
     def setQuery(self, user_query):
         self.user_query = user_query
@@ -32,24 +39,6 @@ class ChatBot:
 
     def setAnswerType(self, answer_type):
         self.query_data['Answer_Type'] = answer_type
-
-    def getIdentifiedEntities(self):
-        entity_scores = self.query_data['Entity_Scores']
-        identified_entities = []
-        for entity in entity_scores:
-            if entity_scores[entity] > self.threshold:
-                identified_entities.append(entity)
-        identified_entities_json = {i: identified_entities[i] for i in identified_entities}
-        return identified_entities_json
-
-    def getOtherEntities(self):
-        entity_scores = self.query_data['Entity_Scores']
-        other_entities = []
-        for entity in entity_scores:
-            if entity_scores[entity] > self.threshold:
-                other_entities.append(entity)
-        other_entities_json = {i: other_entities[i] for i in other_entities}
-        return other_entities_json
 
     def setPrimaryEntityID(self, entity_id):
         if self.query_data['Topic'] == "patient":
@@ -64,20 +53,35 @@ class ChatBot:
             return len(self.query_data['Snomed_ID']) == 1
 
     def findAppliedFilters(self):
-        applied_filters = []
-        for filter_type in self.query_data["Filters"]:
-            if self.query_data["Filters"][filter_type] != "":
-                applied_filters.append(filter_type)
-        applied_filters_json = {i: applied_filters[i] for i in applied_filters}
-        return applied_filters_json
+        age_filter = self.query_data['Filters']['age']
+        gender_filter = self.query_data['Filters']['gender']
+        applied_filters, flag = "", False
 
-    def findPossibleFilters(self):
-        possible_filters = []
-        for filter_type in self.query_data["Filters"]:
-            if self.query_data["Filters"][filter_type] == "":
-                possible_filters.append(filter_type)
-        possible_filters_json = {i: possible_filters[i] for i in possible_filters}
-        return possible_filters_json
+        if age_filter['val'] and age_filter['comp']:
+            applied_filters += "Age "+age_filter['comp']+" "+age_filter['val'] +"\n"
+            flag = True
+        if gender_filter:
+            applied_filters += "Gender = "+gender_filter +"\n"
+            flag = True
+
+        if flag:
+            applied_filters = "The following filters were applied automatically :- \n" + applied_filters
+        else:
+            applied_filters = "No Filters were detected"
+
+        return applied_filters
+
+    def updateFilters(self, filters):
+        for entry in filters:
+            if entry['name'] == "Age":
+                val = re.findall(r'([0-9]+)', entry['filter'])
+                comp = re.findall(r'(<=|>=|<|=|>)', entry['filter'])
+                self.query_data['Filters']['age'] = {'val': val[0], 'comp': comp[0]}
+            elif entry['name'] == "Gender":
+                if "M" in entry['filter']:
+                    self.query_data['Filters']['gender'] = "M"
+                else:
+                    self.query_data['Filters']['gender'] = "F"
 
     def getQueryData(self):
         return self.query_data
@@ -85,66 +89,96 @@ class ChatBot:
     def setQueryData(self, new_query_data):
         self.query_data = new_query_data
 
+    def findTemplateScore(self, keywords):
+        Score = self.query_data['Entity_Scores']
+        Check = {entity: Score[entity] > self.threshold for entity in Score}
+
+        score = 0
+        count = 0
+
+        for keyword in keywords:
+            if Check[keyword]:
+                score += Score[keyword]
+                count += 1
+        
+        if count > 0:
+            score = score/count
+        else:
+            score = 0
+
+        return score
+
     def findTemplates(self):
         if self.verbose: print("Finding Templates")
 
-        Score = self.query_data["Entity_Scores"]
-        Check = {entity: Score[entity] > self.threshold for entity in Score}
+        Check = {entity: self.query_data['Entity_Scores'][entity] > self.threshold for entity in self.query_data['Entity_Scores']}
         Filters = self.query_data["Filters"]
         Templates = []
 
         if self.query_data['Topic'] == "patient" and len(self.query_data['Patient_ID']):
 
             if Check["drug"]:
-                template = get_drug_info(self.query_data['Patient_ID'][0], Check["dose"], Check["administration"], Check["date"])
-                description = f'Information about drugs {"dosage" if Check["dose"] else ""} {"route" if Check["administration"] else ""} {"duration" if Check["dose"] else ""} given to patient with ID : {self.query_data["Patient_ID"][0]}'
-                template_score = (Score["patient"]+Score["dose"]+Score["administration"]+Score["date"])/4
+                template = get_patient_drug_info(self.query_data['Patient_ID'][0], Check["dose"], Check["administration"], Check["date"])
+                description = f'Information about drugs {"dosage" if Check["dose"] else ""} {"route" if Check["administration"] else ""} {"duration" if Check["date"] else ""} given to patient with ID {self.query_data["Patient_ID"][0]}'
+                template_score = self.findTemplateScore(["patient","drug", "dose", "administration", "date"])
                 Templates.append((template, description, template_score))
 
             if Check["condition"]:
-                template = get_patient_disease_info(self.query_data['Patient_ID'][0], Check["date"])
-                description = f'Information about diseases {"and their duration" if Check["date"] else ""} that affected patient with ID : {self.query_data["Patient_ID"][0]}'
-                template_score = (Score["patient"]+Score["date"])/2
+                template = get_patient_condition_info(self.query_data['Patient_ID'][0], Check["date"])
+                description = f'Information about conditions {"and their duration" if Check["date"] else ""} that affected patient with ID {self.query_data["Patient_ID"][0]}'
+                template_score = self.findTemplateScore(["patient","condition", "date"])
                 Templates.append((template, description, template_score))
 
-            if Check["age"] or Check["gender"]:
+            if Check["age"] and not Check["gender"]:
+                template = get_patient_info(self.query_data['Patient_ID'][0], True, False)
+                description = f'Information about age of patient with ID : {self.query_data["Patient_ID"][0]}'
+                template_score = self.findTemplateScore(["patient","age"])
+                Templates.append((template, description, template_score))
+
+            if not Check["age"] and Check["gender"]:
+                template = get_patient_info(self.query_data['Patient_ID'][0], False, True)
+                description = f'Information about gender of patient with ID : {self.query_data["Patient_ID"][0]}'
+                template_score = self.findTemplateScore(["patient", "gender"])
+                Templates.append((template, description, template_score))
+
+            if Check["age"] and Check["gender"]:
                 template = get_patient_info(self.query_data['Patient_ID'][0], True, True)
                 description = f'Information about age and gender of patient with ID : {self.query_data["Patient_ID"][0]}'
-                template_score = (Score["patient"]+Score["age"]+Score["gender"])/3
+                template_score = self.findTemplateScore(["patient", "age", "gender"])
                 Templates.append((template, description, template_score))
 
         elif self.query_data["Topic"] == "drug" and len(self.query_data['Snomed_ID']):
 
             template = get_drug_info(self.query_data['Snomed_ID'][0], Check["administration"])
             description = f'Information about drug {"and its route" if Check["administration"] else ""}  with Snomed_ID : {self.query_data["Snomed_ID"][0]}'
-            template_score = (Score["drug"]+Score["administration"])/2
+            template_score = self.findTemplateScore(["drug", "administration"])
             Templates.append((template, description, template_score))
 
         elif self.query_data["Topic"] == "condition" and len(self.query_data['Snomed_ID']):
 
-            template = get_disease(self.query_data['Snomed_ID'][0])
-            description = f'Information about disease with Snomed_ID : {self.query_data["Snomed_ID"][0]}'
-            template_score = Score["condition"]
+            template = get_condition(self.query_data['Snomed_ID'][0])
+            description = f'Information about condition with Snomed_ID : {self.query_data["Snomed_ID"][0]}'
+            template_score = self.findTemplateScore(["condition"])
             Templates.append((template, description, template_score))
 
         else:
 
-            if Check["patient"] or Check["drug"]:
+            if Check["drug"]:
                 template = get_patient_drug_list(Filters['age']['val'], Filters['age']['comp'], Filters['gender'], Filters['administration'])
                 description = f'Filtered Information about patients and drugs given to them'
-                template_score = (Score["patient"]+Score["drug"])/2
+                template_score = self.findTemplateScore(["patient", "drug"])
                 Templates.append((template, description, template_score))
             
-            if Check["patient"] or Check["condition"]:
-                template = get_patient_disease_list(Filters['age']['val'], Filters['age']['comp'], Filters['gender'])
-                description = f'Filtered Information about patients and diseases had by them'
-                template_score = (Score["patient"]+Score["condition"])/2
+            if Check["condition"]:
+                template = get_patient_condition_list(Filters['age']['val'], Filters['age']['comp'], Filters['gender'])
+                description = f'Filtered Information about patients and conditions had by them'
+                template_score = self.findTemplateScore(["patient", "condition"])
                 Templates.append((template, description, template_score))
 
             if Check["patient"]:
                 template = get_patient_list(Filters['age']['val'], Filters['age']['comp'], Filters['gender'])
                 description = f'Filtered Information about patients'
-                template_score = Score["patient"]
+                template_score = self.findTemplateScore(["patient", "age", "gender"])
                 Templates.append((template, description, template_score))
 
         Templates.sort(key=lambda x: x[2], reverse=True)
@@ -183,25 +217,30 @@ class ChatBot:
             record = {}
             record['headers'] = response['head']['vars']
             record['data'] = []
+
             for result in response["results"]['bindings']:
                 res = []
                 for attribute in result:
-                    res.append(result[attribute]['value'].split('/')[-1])
+                    text = " ".join([i.capitalize() for i in attribute.split("_")]) + " : " + result[attribute]['value'].split('/')[-1] + "\n"
+                    res.append(text)
                 record["data"].append(" ".join(res))
             self.response = record
+            
+            if len(response["results"]['bindings']) == 0:
+                self.response = { 'headers' : [], 'data': ['No results found'] }
 
         elif self.query_data['Answer_Type'] == "Count":
             sparql.setReturnFormat(JSON)
             response = sparql.query().convert()
             count = len(sparql.query().convert()["results"]['bindings'])
-            self.response = { 'headers' : [], 'data': {0:f'{count} Record(s) matched your query'}}
+            self.response = { 'headers' : [], 'data': [f'{count} Record(s) matched your query']}
 
         elif self.query_data['Answer_Type'] == "Boolean":
             sparql.setReturnFormat(JSON)
             response = sparql.query().convert()
             flag = len(sparql.query().convert()["results"]['bindings']) > 0
-            self.response = { 'headers' : [], 'data': {0:f'Yes' if flag else f'No'}}
-
+            self.response = { 'headers' : [], 'data': [f'Yes' if flag else f'No']}
+            
         else:
             self.response = "null"
 

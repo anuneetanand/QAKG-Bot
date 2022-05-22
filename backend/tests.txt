@@ -1,0 +1,30 @@
+What is the age of subject_id_100?
+What is the gender of subject_id_4?
+What is the sex of subject_id_2?
+Who is subject_id_1?
+I want to know details about a specific patient.
+Can you tell me age of a specific person?
+Provide me information about the patient whose ID is subject_id_1.
+What are the drugs that were given to patient with ID subject_id_2?
+How many drugs were given to me?
+Provide me information about the drugs that were given to subject_id_2 along with route of administration.
+What dose of different drugs were given to subject_id_2?
+What were the start and end dates for different drugs given to subject_id_2?
+For what durations were different drugs given to subject_id_20?
+What were the conditions that subject_id_1 experienced?
+What is the name of drug with snomed_id 1378382?
+Is there a drug with snomed_id 1997881?
+Give details about snomed_id 1997881.
+What is the route of administration of drug with snomed_id 1113073?
+What is the name of condition with snomed_id 438398?
+Provide information about snomed_id 40.
+Tell me the name of conditions experienced by kids under 2.
+Is there a condition with snomed_id 100?
+List information about male patients.
+List drugs which have Rectal route of administration.
+List drugs which were given to kids.
+How many drugs have Oral route of administration?
+What conditions were experienced by old female patients?
+What drugs were given to adult male patients?
+How many male patients are there?
+Is there a patient with age > 100?

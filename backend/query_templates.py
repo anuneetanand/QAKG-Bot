@@ -1,5 +1,3 @@
-# Dynamic SPARQL Query Templates
-
 def get_prefix():
     return f"""
     PREFIX schema: <http://www.semanticweb.org/btp/clinical/ontology/>
@@ -37,7 +35,7 @@ def get_drug_info(snomed_id, route = False):
     var1, var2 = "?drug_name", "?route"
 
     return f"""
-    SELECT {var1} {var2 if route else ""} WHERE {{
+    SELECT DISTINCT {var1} {var2 if route else ""} WHERE {{
         ?drug a schema:Drug .
         ?drug schema:snomed_id "{snomed_id}"^^xsd:integer .
         ?drug rdfs:label {var1} .
@@ -50,7 +48,7 @@ def get_drug_list(route = ""):
     var1, var2 = "?snomed_ID", "?drug_name"
     
     return f"""
-    SELECT {var1} {var2} WHERE {{
+    SELECT DISTINCT {var1} {var2} WHERE {{
         ?drug a schema:Drug .
         ?drug schema:snomed_id {var1} .
         ?drug rdfs:label {var2} .
@@ -59,19 +57,19 @@ def get_drug_list(route = ""):
     }}
     """
 
-def get_disease(snomed_id):
-    var1 = "?disease_name"
+def get_condition(snomed_id):
+    var1 = "?condition_name"
 
     return f"""
     SELECT {var1} WHERE {{
-        ?disease a schema:Condition .
-        ?disease schema:snomed_id "{snomed_id}"^^xsd:integer .
-        ?disease rdfs:label {var1}
+        ?condition a schema:Condition .
+        ?condition schema:snomed_id "{snomed_id}"^^xsd:integer .
+        ?condition rdfs:label {var1}
     }}
     """
 
 def get_patient_drug_info(patient_id, dosage = False, route = False, date = False):
-    var1, var2, var3, var4, var5, var6 = "?drug_name", "?dosageAmount", "?dosageUnit" , "?route", "?start", "?end"
+    var1, var2, var3, var4, var5, var6 = "?drug_name", "?dosage_amount", "?dosage_unit" , "?route", "?start", "?end"
 
     return f"""
     SELECT DISTINCT {var1} {var2 if dosage else ""} {var3 if dosage else ""} {var4 if route else ""} {var5 if date else ""} {var6 if date else ""} WHERE {{
@@ -79,8 +77,8 @@ def get_patient_drug_info(patient_id, dosage = False, route = False, date = Fals
         ?person schema:hasPatientID "{patient_id}"^^xsd:str .
         ?person schema:drug_administered ?indDrug .
         ?indDrug schema:drugType ?drugID .
-        {"?indDrug schema:patientDosage ?dosageAmount ." if dosage else ""}
-        {"?indDrug schema:doseUnit ?dosageUnit ." if dosage else ""}
+        {"?indDrug schema:patientDosage ?dosage_amount ." if dosage else ""}
+        {"?indDrug schema:doseUnit ?dosage_unit ." if dosage else ""}
         {"?indDrug schema:routeOfAdministration ?route ." if route else ""}
         {"?indDrug schema:drug_adm_start ?start ." if date else ""}
         {"?indDrug schema:drug_adm_end ?end ." if date else ""}
@@ -89,7 +87,7 @@ def get_patient_drug_info(patient_id, dosage = False, route = False, date = Fals
     """
 
 def get_patient_drug_list(age = "", age_comp = "", gender = "", route = ""):
-    var1, var2, var3, var4, var5, var6, var7 = "?patient_id", "?age", "?gender", "?drug_name", "?dosageAmount", "?dosageUnit", "?route"
+    var1, var2, var3, var4, var5, var6, var7 = "?patient_id", "?age", "?gender", "?drug_name", "?dosage_amount", "?dosage_unit", "?route"
 
     return f"""
     SELECT DISTINCT {var1} {var2} {var3} {var4} {var5} {var6} {var7 if not route else ""} WHERE {{
@@ -100,18 +98,18 @@ def get_patient_drug_list(age = "", age_comp = "", gender = "", route = ""):
         {f'FILTER ({var3} = "{gender}")' if gender else ""}
         ?person schema:drug_administered ?indDrug .
         ?indDrug schema:drugType ?drugID .
-        ?indDrug schema:patientDosage ?dosageAmount .
-        ?indDrug schema:doseUnit ?dosageUnit .
+        ?indDrug schema:patientDosage {var5} .
+        ?indDrug schema:doseUnit {var6} .
         ?indDrug schema:routeOfAdministration {'"'+route+'"^^xsd:str' if route else var7} .
-        ?drugID rdfs:label ?drug_name .
+        ?drugID rdfs:label {var4} .
     }}
     """
 
-def get_patient_disease_info(patient_id, date = False):
-    var1, var2, var3 = "?disease", "?onSet", "?offSet"
+def get_patient_condition_info(patient_id, date = False):
+    var1, var2, var3 = "?condition_name", "?on_set", "?off_set"
 
     return f"""
-    SELECT DISTINCT {var1} {var2 if date else ""} {var3 if date else ""} WHERE {{
+    SELECT {var1} {var2 if date else ""} {var3 if date else ""} WHERE {{
         ?person a schema:Patient.
         ?person schema:hasPatientID "{patient_id}"^^xsd:str .
         ?person schema:hasCondition ?indCond .
@@ -123,11 +121,11 @@ def get_patient_disease_info(patient_id, date = False):
     }}
     """
 
-def get_patient_disease_list(age = "", age_comp = "", gender = ""):
-    var1, var2, var3, var4 = "?patient_id", "?age", "?gender", "?disease"
+def get_patient_condition_list(age = "", age_comp = "", gender = ""):
+    var1, var2, var3, var4 = "?patient_id", "?age", "?gender", "?condition_name"
 
     return f"""
-    SELECT DISTINCT {var1} {var2} {var3} {var4} WHERE {{
+    SELECT {var1} {var2} {var3} {var4} WHERE {{
         ?person a schema:Patient.
         ?person schema:hasPatientID {var1} .
         ?person schema:age {var2} .

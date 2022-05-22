@@ -1,12 +1,16 @@
-const ConfirmationSpecificQuery = (props) => {
+const AnswerType = (props) => {
   const options = [
     {
-      name: "Yes",
+      name: "Record",
       id: 1,
     },
     {
-      name: "No",
+      name: "Count",
       id: 2,
+    },
+    {
+      name: "Boolean",
+      id: 3,
     },
     {
       name: "Restart",
@@ -23,9 +27,7 @@ const ConfirmationSpecificQuery = (props) => {
           if (option.name === "Restart")
             props.actionProvider.handleRestartFlow();
           else
-            props.actionProvider.handleUserConfirmationSpecificQuery(
-              option.name
-            );
+            props.actionProvider.handleAnswerTypeQuery(option.name);
         }}
       >
         {option.name}
@@ -35,4 +37,4 @@ const ConfirmationSpecificQuery = (props) => {
   return <div>{optionsMarkup}</div>;
 };
 
-export default ConfirmationSpecificQuery;
+export default AnswerType;

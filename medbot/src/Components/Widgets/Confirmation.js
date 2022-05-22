@@ -1,4 +1,4 @@
-const ConfirmationGeneralizedQuery = (props) => {
+const Confirmation = (props) => {
   const options = [
     {
       name: "Yes",
@@ -8,10 +8,6 @@ const ConfirmationGeneralizedQuery = (props) => {
       name: "No",
       id: 2,
     },
-    {
-      name: "Restart",
-      id: 1000000,
-    },
   ];
 
   const optionsMarkup = options.map((option) => {
@@ -20,10 +16,7 @@ const ConfirmationGeneralizedQuery = (props) => {
         className="option-item"
         key={option.id}
         onClick={() => {
-          if (option.name === "Restart")
-            props.actionProvider.handleRestartFlow();
-          else
-            props.actionProvider.handleUserConfirmationGeneralizedQuery(
+            props.actionProvider.handleUserConfirmation(
               option.name
             );
         }}
@@ -35,4 +28,4 @@ const ConfirmationGeneralizedQuery = (props) => {
   return <div>{optionsMarkup}</div>;
 };
 
-export default ConfirmationGeneralizedQuery;
+export default Confirmation;

@@ -9,7 +9,7 @@ const Menu = (props) => {
     },
     {
       name: "Query over the knowledge base",
-      handler: props.actionProvider.handleGeneralQuery,
+      handler: props.actionProvider.handleGenericQuery,
       id: 2,
     },
     {
